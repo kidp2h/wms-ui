@@ -8,6 +8,10 @@ export default defineConfig({
     port: +process.env.PORT! || 4338,
     host: true,
   },
+  preview: {
+    port: +process.env.PORT! || 80,
+    host: true,
+  },
   plugins: [react()],
   resolve: {
     alias: {
