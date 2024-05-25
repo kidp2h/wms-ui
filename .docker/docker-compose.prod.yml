@@ -6,12 +6,14 @@ services:
     restart: always
     build:
       context: ../
-      dockerfile: ./.docker/Dockerfile.dev
+      dockerfile: ./.docker/Dockerfile.prod
+      args:
+        - PORT=${PORT_PRODUCTION}
     environment:
       VITE_VERSION_API: ${VITE_BASE_API}
       VITE_BASE_API: ${VITE_BASE_API}
     ports:
-      - ${PORT}:${PORT}
+      - ${PORT_PRODUCTION}:80
 
     volumes:
       - ../src:/wms-ui/src/

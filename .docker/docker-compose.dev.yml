@@ -7,11 +7,13 @@ services:
     build:
       context: ../
       dockerfile: ./.docker/Dockerfile.dev
+      args:
+        - PORT=${PORT}
     environment:
       VITE_VERSION_API: ${VITE_BASE_API}
       VITE_BASE_API: ${VITE_BASE_API}
     ports:
-      - ${PORT}:${PORT}
+      - ${PORT}:4338
 
     volumes:
       - ../src:/wms-ui/src/
