@@ -1,0 +1,7 @@
+FROM node:20-alpine
+ENV NODE_ENV=development
+WORKDIR /wms-ui
+COPY ./ ./
+RUN npx rimraf ./dist && npm install -g pnpm && pnpm install
+CMD ["pnpm", "dev"]
+
