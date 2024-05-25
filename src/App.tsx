@@ -10,9 +10,10 @@ const App = (): JSX.Element => {
         <ConfigProvider
           theme={{
             token: {
-              wireframe: false,
+              fontFamily: "'Poppins', sans-serif",
             },
-            algorithm: theme.darkAlgorithm,
+
+            algorithm: [theme.defaultAlgorithm, theme.compactAlgorithm],
           }}
         >
           {routes}
