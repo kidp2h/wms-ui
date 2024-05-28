@@ -65,6 +65,7 @@ export default function Login() {
             placeholder={`Mã nhân viên`}
             size='large'
             // variant='filled'
+            defaultValue={'E00001'}
             onInput={(e: ChangeEvent<HTMLInputElement>) =>
               (e.target.value = e.target.value.toUpperCase())
             }
@@ -87,6 +88,7 @@ export default function Login() {
           <Input.Password
             type='password'
             placeholder={`Mật khẩu`}
+            defaultValue={'123456'}
             size='large'
             className='placeholder:text-black'
             // variant=

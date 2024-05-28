@@ -11,7 +11,7 @@ export default function BaseLayout({
 
       <Footer
         style={{ textAlign: 'center' }}
-        className='absolute bottom-0 w-full text-sm border-t-2'
+        className=' hidden md:block absolute bottom-0 w-full text-sm border-t-2'
       >
         Workforce Management System © {new Date().getFullYear()}
       </Footer>

@@ -1,8 +1,5 @@
-import { useCookies } from 'react-cookie';
-import { useSelector } from 'react-redux';
-
-export default function Dashboard() {
+export const Dashboard = () => {
   // const [cookies, setCookie] = useSelector();
 
   return <>Dashboard</>;
-}
+};

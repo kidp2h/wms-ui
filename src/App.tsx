@@ -21,8 +21,7 @@ const App = (): JSX.Element => {
                 token: {
                   fontFamily: "'Poppins', sans-serif",
                 },
-
-                algorithm: [theme.defaultAlgorithm, theme.compactAlgorithm],
+                algorithm: theme.defaultAlgorithm,
               }}
             >
               <RoutesConfig />

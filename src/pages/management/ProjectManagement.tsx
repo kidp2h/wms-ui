@@ -1,5 +1,5 @@
 import React from 'react';
 
-export default function ProjectManagement() {
+export const ProjectManagement = () => {
   return <div>Management Project</div>;
-}
+};

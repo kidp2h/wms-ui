@@ -1,12 +1,13 @@
-import { title } from 'process';
-
 export const config = {
   auth: {
     root: '/auth',
     login: '/auth/login',
   },
+  root: '/',
+  logout: '/logout',
   dashboard: {
     root: '/',
+    profile: '/dashboard/profile',
     management: {
       root: {
         path: '/dashboard/management',

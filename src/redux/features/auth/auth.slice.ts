@@ -13,11 +13,14 @@ const slice = createSlice({
     ) => {
       state.accessToken = accessToken;
     },
+
+    logout: (state) => {
+      state.accessToken = null;
+    },
   },
-  extraReducers: (builder) => {},
 });
 
-export const { setCredentials } = slice.actions;
+export const { setCredentials, logout } = slice.actions;
 
 export default slice.reducer;
 

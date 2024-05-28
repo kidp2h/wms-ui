@@ -1,19 +1,23 @@
-import { Route, RouteProps, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Login from '@/pages/Login';
-import Dashboard from '@/pages/Dashboard';
 import MainLayout from '@/layouts/MainLayout';
 import { config } from './routes.config';
-import ProjectManagement from '@/pages/management/ProjectManagement';
-import NotFound from '@/pages/NotFound';
-import EmployeeManagement from '@/pages/management/EmployeeManagement';
 import AuthLayout from '@/layouts/AuthLayout';
-import { selectCurrentUser } from '@/redux/features/auth/auth.slice';
-import { useSelector } from 'react-redux';
+import {
+  Logout,
+  EmployeeManagement,
+  NotFound,
+  ProjectManagement,
+  Dashboard,
+  Profile,
+} from '@/pages';
 
 export const RoutesConfig = () => {
   return (
     <Routes>
+      <Route path={config.logout} element={<Logout />}></Route>
       <Route path={config.dashboard.root} Component={MainLayout}>
+        <Route path={config.dashboard.profile} element={<Profile />} />
         <Route index element={<Dashboard />} />
         <Route path={config.dashboard.management.root.path}>
           <Route
@@ -26,6 +30,9 @@ export const RoutesConfig = () => {
             element={<EmployeeManagement />}
           />
         </Route>
+      </Route>
+      <Route path='/auth' Component={AuthLayout}>
+        <Route index path='/auth/login' element={<Login />} />
       </Route>
       <Route path='/auth' Component={AuthLayout}>
         <Route index path='/auth/login' element={<Login />} />
