@@ -1,29 +1,56 @@
+import { LoginModel, useAuthorizeMutation } from '@/services';
+import { useNavigate } from 'react-router-dom';
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
   LockOutlined,
-  LoginOutlined,
   StepForwardOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Input, Row } from 'antd';
-import React, { ChangeEvent } from 'react';
+import { Button, Form, Input, Row, notification } from 'antd';
+import React, { ChangeEvent, useEffect } from 'react';
+import { config } from '@/routes';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '@/redux/features/auth/auth.slice';
 
 const FormItem = Form.Item;
 
-type LoginModel = {
-  username: string;
-  password: string;
-};
 export default function Login() {
+  const [cookies, setCookie] = useCookies(['accessToken']);
+  const dispatch = useDispatch();
+  const [authorize, { data, isLoading, isSuccess, isError }] =
+    useAuthorizeMutation();
+  const navigate = useNavigate();
+  const [api, contextHolder] = notification.useNotification();
+  useEffect(() => {
+    if (isSuccess) {
+      navigate(config.dashboard.root);
+    }
+
+    if (isError) {
+      api.warning({
+        message: `Thông báo`,
+        description: 'Đăng nhập thất bại, vui lòng thử lại.',
+        placement: 'bottomRight',
+      });
+    }
+  }, [isSuccess, isError]);
   return (
     <>
+      {contextHolder}
       <Form
-        className='w-full lg:w-1/5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 '
+        className='w-full px-3 lg:w-1/5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 '
         layout='vertical'
         size='large'
-        onFinish={(data: LoginModel) => {
-
+        onFinish={async (data: LoginModel) => {
+          const result = await authorize(data);
+          if (result.data) {
+            const { data } = result.data;
+            if (data) {
+              dispatch(setCredentials({ accessToken: data.accessToken }));
+            }
+          }
         }}
       >
         <FormItem
@@ -78,6 +105,7 @@ export default function Login() {
             className='block w-full uppercase text-center flex items-center justify-center text-md'
             htmlType='submit'
             size='large'
+            disabled={isLoading}
           >
             Đăng nhập
           </Button>

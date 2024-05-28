@@ -7,7 +7,6 @@ export default function BaseLayout({
 }) {
   return (
     <Layout>
-      <Header />
       <Content className='w-full h-full'>{children}</Content>
 
       <Footer
