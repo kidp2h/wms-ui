@@ -115,7 +115,7 @@ export default function MainLayout() {
               items={siderItems}
             />
           </Sider>
-          <Layout className='p-10'>
+          <Layout className='p-6' style={{ height: 'calc(100vh - 130px)' }}>
             <Content>
               <Outlet />
             </Content>
