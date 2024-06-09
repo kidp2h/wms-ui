@@ -29,6 +29,7 @@ export default function MainLayout() {
     }
   }, [user]);
   const headerItem: MenuProps['items'] = [
+    { key: 'headerName', label: 'Workforce Management System' },
     {
       key: 'fullnameHeaderItem',
       label: (
@@ -90,7 +91,7 @@ export default function MainLayout() {
         >
           <Menu
             theme='dark'
-            className='flex w-full justify-end'
+            className='flex w-full justify-between'
             mode='horizontal'
             selectable={false}
             items={headerItem}
