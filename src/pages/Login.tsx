@@ -17,9 +17,8 @@ import { setCredentials } from '@/redux/features/auth/auth.slice';
 const FormItem = Form.Item;
 
 export default function Login() {
-  const [cookies, setCookie] = useCookies(['accessToken']);
   const dispatch = useDispatch();
-  const [authorize, { data, isLoading, isSuccess, isError }] =
+  const [authorize, { isLoading, isSuccess, isError }] =
     useAuthorizeMutation();
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
@@ -43,18 +42,19 @@ export default function Login() {
         className='w-full px-3 lg:w-1/5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 '
         layout='vertical'
         size='large'
+        initialValues={{ code: 'M00001', password: '1234567' }}
         onFinish={async (data: LoginModel) => {
           const result = await authorize(data);
           if (result.data) {
             const { data } = result.data;
             if (data) {
-              dispatch(setCredentials({ accessToken: data.accessToken }));
+              dispatch(setCredentials({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
             }
           }
         }}
       >
         <FormItem
-          name='username'
+          name='code'
           rules={[{ required: true, message: 'Vui lòng nhập mã nhân viên' }]}
           label={<div className='text-sm'>Mã nhân viên</div>}
           tooltip='Mã nhân viên'
@@ -65,7 +65,6 @@ export default function Login() {
             placeholder={`Mã nhân viên`}
             size='large'
             // variant='filled'
-            defaultValue={'E00001'}
             onInput={(e: ChangeEvent<HTMLInputElement>) =>
               (e.target.value = e.target.value.toUpperCase())
             }
@@ -88,7 +87,6 @@ export default function Login() {
           <Input.Password
             type='password'
             placeholder={`Mật khẩu`}
-            defaultValue={'123456'}
             size='large'
             className='placeholder:text-black'
             // variant=

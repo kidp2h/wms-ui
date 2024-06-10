@@ -29,8 +29,9 @@ export default function MainLayout() {
     }
   }, [user]);
   const headerItem: MenuProps['items'] = [
-    { key: 'headerName', label: 'Workforce Management System' },
+    { key: 'headerName', label: 'Workforce Management System', className: 'mr-auto' },
     {
+      className: 'ml-auto',
       key: 'fullnameHeaderItem',
       label: (
         <Avatar
@@ -91,7 +92,8 @@ export default function MainLayout() {
         >
           <Menu
             theme='dark'
-            className='flex w-full justify-between'
+            className='flex w-full'
+
             mode='horizontal'
             selectable={false}
             items={headerItem}
@@ -116,7 +118,7 @@ export default function MainLayout() {
               items={siderItems}
             />
           </Sider>
-          <Layout className='p-6' style={{ height: 'calc(100vh - 130px)' }}>
+          <Layout className='p-6' >
             <Content>
               <Outlet />
             </Content>

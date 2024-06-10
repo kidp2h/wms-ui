@@ -9,12 +9,12 @@ export default function BaseLayout({
     <Layout>
       <Content className='w-full h-full'>{children}</Content>
 
-      <Footer
-        style={{ textAlign: 'center' }}
-        className=' hidden md:block absolute bottom-0 w-full text-sm border-t-2'
-      >
-        Workforce Management System © {new Date().getFullYear()}
-      </Footer>
+      {/* <Footer */}
+      {/*   style={{ textAlign: 'center' }} */}
+      {/*   className=' hidden md:block absolute bottom-0 w-full text-sm border-t-2' */}
+      {/* > */}
+      {/*   Workforce Management System © {new Date().getFullYear()} */}
+      {/* </Footer> */}
     </Layout>
   );
 }
