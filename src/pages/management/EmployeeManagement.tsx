@@ -20,7 +20,6 @@ export const EmployeeManagement = () => {
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
   const [employees, setEmployees] = useState<Partial<Employee>[]>([]);
   const [creatingKey, setCreatingKey] = useState<string>('')
-
   const [form] = Form.useForm()
   const [editingKey, setEditingKey] = useState<string>('');
 
@@ -36,8 +35,6 @@ export const EmployeeManagement = () => {
     setEditingKey('')
     const row = await form.validateFields()
     console.log(row);
-
-
   }
   useEffect(() => {
 
@@ -55,8 +52,6 @@ export const EmployeeManagement = () => {
     setEmployees(employees.filter(e => e.code !== record.code))
     if (record.id)
       removeEmployee(record.id)
-
-
   }
   const add = () => {
     const code = `E${random(100000000, 999999999)}`;
