@@ -5,15 +5,17 @@ const slice = createSlice({
   name: 'auth',
   initialState: { accessToken: null, refreshToken: null } as {
     accessToken: null | string;
-    refreshToken: null | string
+    refreshToken: null | string;
   },
   reducers: {
     setCredentials: (
       state,
-      { payload: { accessToken, refreshToken } }: PayloadAction<{ accessToken: string, refreshToken: string }>,
+      {
+        payload: { accessToken, refreshToken },
+      }: PayloadAction<{ accessToken: string; refreshToken: string }>,
     ) => {
       state.accessToken = accessToken;
-      state.refreshToken = refreshToken
+      state.refreshToken = refreshToken;
     },
 
     logout: (state) => {
