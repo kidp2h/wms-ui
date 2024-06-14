@@ -1,9 +1,12 @@
-import { employeeApi, authApi } from '@/services';
+import { employeeApi } from '@/services/employee';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { persistStore } from 'redux-persist';
-import { reducers } from './reducers';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { reducers } from './reducers';
+import { authApi } from '@/services';
+import { projectApi } from '@/services/project';
+import { timeEntryApi } from '@/services/timeEntry';
 
 export const store = configureStore({
   reducer: reducers,
@@ -11,10 +14,14 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(employeeApi.middleware, authApi.middleware),
+    }).concat(
+      employeeApi.middleware,
+      authApi.middleware,
+      projectApi.middleware,
+      timeEntryApi.middleware,
+    ),
 });
 setupListeners(store.dispatch);
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export const persistor = persistStore(store);

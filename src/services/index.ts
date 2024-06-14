@@ -3,5 +3,8 @@ export interface Response<T> {
   message: string | null;
   data: T | null;
 }
+
 export * from './employee';
 export * from './auth';
+export * from './timeEntry';
+export * from './project';

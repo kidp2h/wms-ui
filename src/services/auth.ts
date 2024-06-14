@@ -1,36 +1,27 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Employee } from '@nthinh.dev/prisma';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { Response } from '.';
-import { RootState } from '@/redux/store';
+import { baseQuery } from './api';
 
 export type LoginModel = {
-  username: string;
+  code: string;
   password: string;
 };
+
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BASE_API,
-
-    prepareHeaders: (headers, { getState }) => {
-      // By default, if we have a token in the store, let's use that for authenticated requests
-      const accessToken = (getState() as RootState).auth.accessToken;
-      if (accessToken) {
-        headers.set('Authorization', `Bearer ${accessToken}`);
-      }
-      return headers;
-    },
-  }),
-
+  baseQuery: baseQuery,
   endpoints: (builder) => ({
-    authorize: builder.mutation<Response<{ accessToken: string }>, LoginModel>({
+    authorize: builder.mutation<
+      Response<{ accessToken: string; refreshToken: string }>,
+      LoginModel
+    >({
       query: (body) => ({
         url: '/auth/login',
         method: 'POST',
-        body,
+        body: body,
       }),
       transformResponse: (
-        response: Response<{ accessToken: string }>,
+        response: Response<{ accessToken: string; refreshToken: string }>,
         meta,
         arg,
       ) => response,
