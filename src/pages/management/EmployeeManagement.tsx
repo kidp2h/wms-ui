@@ -28,9 +28,8 @@ export const EmployeeManagement = () => {
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
   const [employees, setEmployees] = useState<Partial<Employee>[]>([]);
-  const [creatingKey, setCreatingKey] = useState<string>('');
-
-  const [form] = Form.useForm();
+  const [creatingKey, setCreatingKey] = useState<string>('')
+  const [form] = Form.useForm()
   const [editingKey, setEditingKey] = useState<string>('');
 
   const isEditing = (record: Partial<Employee>) => record.code === editingKey;
@@ -57,6 +56,7 @@ export const EmployeeManagement = () => {
   };
 
   const remove = (record: Partial<Employee>) => {
+
     setCreatingKey('');
     setEmployees(employees.filter((e) => e.code !== record.code));
     if (record.id) removeEmployee(record.id);
