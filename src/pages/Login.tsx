@@ -8,25 +8,25 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Button, Form, Input, Row, notification } from 'antd';
-import React, { ChangeEvent, useEffect } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import { config } from '@/routes';
-import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '@/redux/features/auth/auth.slice';
 
 const FormItem = Form.Item;
 
 export default function Login() {
+  // TODO:
+  // WARN:
+  //
   const dispatch = useDispatch();
-  const [authorize, { isLoading, isSuccess, isError }] =
-    useAuthorizeMutation();
+  const [authorize, { isLoading, isSuccess, isError }] = useAuthorizeMutation();
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
   useEffect(() => {
     if (isSuccess) {
       navigate(config.dashboard.root);
     }
-
     if (isError) {
       api.warning({
         message: `Thông báo`,
@@ -48,7 +48,12 @@ export default function Login() {
           if (result.data) {
             const { data } = result.data;
             if (data) {
-              dispatch(setCredentials({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
+              dispatch(
+                setCredentials({
+                  accessToken: data.accessToken,
+                  refreshToken: data.refreshToken,
+                }),
+              );
             }
           }
         }}
@@ -102,7 +107,7 @@ export default function Login() {
           <Button
             type='primary'
             icon={<StepForwardOutlined className='text-lg ' />}
-            className='block w-full uppercase text-center flex items-center justify-center text-md'
+            className='w-full uppercase text-center flex items-center justify-center text-md'
             htmlType='submit'
             size='large'
             disabled={isLoading}

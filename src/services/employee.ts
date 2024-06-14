@@ -1,9 +1,7 @@
-import { BaseQueryFn, FetchArgs, FetchBaseQueryError, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Employee } from '@nthinh.dev/prisma';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { Employee } from 'wms-types';
 import { Response } from '.';
-import { setCredentials } from '@/redux/features/auth/auth.slice';
 import { baseQueryWithReauth } from './api';
-
 
 export const employeeApi = createApi({
   reducerPath: 'employeeApi',
@@ -17,13 +15,16 @@ export const employeeApi = createApi({
       query: () => '/employees',
       providesTags: ['Employees'],
     }),
-    addEmployee: builder.mutation<Response<Employee>, Pick<Employee, 'code' | 'role' | 'email' | 'password' | 'fullname'>>({
+    addEmployee: builder.mutation<
+      Response<Employee>,
+      Pick<Employee, 'code' | 'role' | 'email' | 'password' | 'fullname'>
+    >({
       query: (body) => ({
         url: `/employee`,
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Employees']
+      invalidatesTags: ['Employees'],
     }),
     removeEmployee: builder.mutation<Response<Employee>, string>({
       query: (id) => ({
@@ -31,10 +32,15 @@ export const employeeApi = createApi({
         method: 'DELETE',
       }),
 
-      invalidatesTags: ['Employees']
-    })
+      invalidatesTags: ['Employees'],
+    }),
   }),
 });
 
-export const { useGetEmployeeByIdQuery, useAddEmployeeMutation, useGetEmployeesQuery, useLazyGetEmployeeByIdQuery, useRemoveEmployeeMutation } =
-  employeeApi;
+export const {
+  useGetEmployeeByIdQuery,
+  useAddEmployeeMutation,
+  useGetEmployeesQuery,
+  useLazyGetEmployeeByIdQuery,
+  useRemoveEmployeeMutation,
+} = employeeApi;
