@@ -1,5 +1,5 @@
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Project } from '@nthinh.dev/prisma';
+import { Project } from 'wms-types';
 import { Response } from '.';
 import { setCredentials } from '@/redux/features/auth/auth.slice';
 import { baseQueryWithReauth } from './api';

@@ -20,7 +20,7 @@ export default function SkeletonTable({
 }: SkeletonTableProps): JSX.Element {
   return loading ? (
     <Table
-      rowKey="key"
+      rowKey='key'
       pagination={false}
       dataSource={[...Array(rowCount)].map((_, index) => ({
         key: `key${index}`,

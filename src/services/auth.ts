@@ -7,25 +7,26 @@ export type LoginModel = {
   password: string;
 };
 
-
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQuery,
   endpoints: (builder) => ({
-    authorize: builder.mutation<Response<{ accessToken: string, refreshToken: string }>, LoginModel>({
+    authorize: builder.mutation<
+      Response<{ accessToken: string; refreshToken: string }>,
+      LoginModel
+    >({
       query: (body) => ({
         url: '/auth/login',
         method: 'POST',
-        body: body
+        body: body,
       }),
       transformResponse: (
-        response: Response<{ accessToken: string, refreshToken: string }>,
+        response: Response<{ accessToken: string; refreshToken: string }>,
         meta,
         arg,
       ) => response,
     }),
   }),
 });
-
 
 export const { useAuthorizeMutation } = authApi;
