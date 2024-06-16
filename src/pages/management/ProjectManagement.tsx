@@ -1,20 +1,29 @@
-import { useAddProjectMutation, useGetProjectsQuery, useRemoveProjectMutation } from '@/services/project';
+import { useAddProjectMutation, useGetProjectByIdQuery, useGetProjectsQuery, useGetProjectsbySreachQuery, useRemoveProjectMutation } from '@/services/project';
 import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
 import { random } from 'lodash';
 import { useEffect, useState } from 'react';
-import { Project,StatusProject,TypeProject,TypeLeave } from 'wms-types';
+import { Project, StatusProject, TypeProject, TypeLeave, Role } from 'wms-types';
 const { Search } = Input;
 import { SearchProps } from 'antd/es/input';
 import { ColumnType } from 'antd/es/table';
 import { ColumnExpand, EditableCell } from '@/components/shared/EditableCell';
 import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined, StopOutlined } from '@ant-design/icons';
 import SkeletonTable, { SkeletonTableColumnsType } from '@/components/shared/TableSkeleton';
+import { useSelector } from 'react-redux';
+import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
+import { useGetEmployeeByCodeQuery } from '@/services';
+import { useNavigate } from 'react-router-dom';
 export const ProjectManagement = () => {
+  const code = useSelector(selectCurrentCode);
+  const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isError, isLoading, currentData } = useGetProjectsQuery();
   const [removeProject, ProjectRemoved] = useRemoveProjectMutation();
   const [addProject, ProjectAdded] = useAddProjectMutation();
   const [Projects, setProjects] = useState<Partial<Project>[]>([]);
   const [creatingKey, setCreatingKey] = useState<string>('')
+  const [search, setSearch] = useState<string>('')
+  const { data: project1 } = useGetProjectsbySreachQuery(search)
+
   const [form] = Form.useForm()
   const [editingKey, setEditingKey] = useState<string>('');
 
@@ -29,8 +38,12 @@ export const ProjectManagement = () => {
     const row = await form.validateFields()
     console.log(row);
   }
-  useEffect(() => {
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    if((currentuser?.data.role == Role.EMPLOYEE)){
+      navigate('/');
+    }
     if (response != undefined) {
       setProjects([...response?.data!])
     }
@@ -60,8 +73,8 @@ export const ProjectManagement = () => {
   const applyAdd = async (key: string) => {
     try {
       const row = (await form.validateFields()) as Required<Project>
-      const {name ,description,status,type,typeLeave,limit} = row;
-      const project = {
+      const { name, description, status, type, typeLeave, limit } = row;
+      const projectadd = {
         code: editingKey,
         name,
         description,
@@ -69,14 +82,14 @@ export const ProjectManagement = () => {
         type,
         typeLeave,
         limit,
-        
+
       }
+      const result = await addProject(projectadd)
 
-      const result = await addProject(project)
-
-      setProjects(Projects.map((e) => e.code === editingKey ? { ...project, id: result.data?.data?.id } : e))
+      setProjects(Projects.map((e) => e.code === editingKey ? { ...projectadd, id: result.data?.data?.id } : e))
       setCreatingKey('')
       setEditingKey('')
+      console.log(projectadd)
 
 
     } catch (error) {
@@ -84,7 +97,18 @@ export const ProjectManagement = () => {
 
     }
   }
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+  const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
+    if (!value ) {
+      setProjects([...response?.data!])
+    }
+     else {
+      setSearch(value)
+      if (project1 != undefined) {
+        console.log(project1?.data)
+        setProjects([...project1?.data!])
+      }
+    }
+  }
   const columns: (ColumnType<Partial<Project>> & ColumnExpand)[] = [
     {
       title: 'Mã dự án',
@@ -95,11 +119,11 @@ export const ProjectManagement = () => {
       title: 'Tên dự án',
       dataIndex: 'name',
       editable: true,
-      
+
     },
     {
       title: 'Mô tả dự án',
-      dataIndex: 'discription',
+      dataIndex: 'description',
       editable: true,
       type: 'string'
     },
@@ -108,27 +132,27 @@ export const ProjectManagement = () => {
       dataIndex: 'status',
       editable: true,
       type: 'select',
-      values: [StatusProject.COMPLETED, StatusProject.NOT_STARTED,StatusProject.ONGOING]
+      values: [StatusProject.COMPLETED, StatusProject.NOT_STARTED, StatusProject.ONGOING]
     },
     {
       title: 'Loại dự án',
       dataIndex: 'type',
       editable: true,
       type: 'select',
-      values: [TypeProject.LEAVE, TypeProject.OVERTIME,TypeProject.PROJECT]
+      values: [TypeProject.LEAVE, TypeProject.OVERTIME, TypeProject.PROJECT]
     },
     {
       title: 'Loại nghỉ',
       dataIndex: 'typeLeave',
       editable: true,
       type: 'select',
-      values: [TypeLeave.ANNUAL, TypeLeave.CLASS_SCHEDULE,TypeLeave.INTERN,TypeLeave.SICK,TypeLeave.VACATION]
+      values: [TypeLeave.ANNUAL, TypeLeave.CLASS_SCHEDULE, TypeLeave.INTERN, TypeLeave.SICK, TypeLeave.VACATION]
     },
     {
       title: 'Giới hạn Thành viên',
       dataIndex: 'limit',
       editable: true,
-      type: 'string'
+      type: 'number'
     },
     {
       title: 'Hành động',
@@ -221,7 +245,7 @@ export const ProjectManagement = () => {
           </Button>
         </Flex>
         <div className='w-full h-full'>
-          <SkeletonTable loading={isLoading} columns={mappedColumn as SkeletonTableColumnsType[]}>
+          <SkeletonTable loading={isLoading}  columns={mappedColumn as SkeletonTableColumnsType[]}>
             <Form form={form} component={false}>
               <Table className='h-full w-full' rowKey={'code'} columns={mappedColumn} dataSource={Projects} pagination={false} components={{
                 body: {

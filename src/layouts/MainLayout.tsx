@@ -2,8 +2,9 @@ import { useNavigate, Outlet, Link } from 'react-router-dom';
 import BaseLayout from './BaseLayout';
 import { Avatar, Button, Layout, Menu, MenuProps, theme } from 'antd';
 import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '@/redux/features/auth/auth.slice';
+import { selectCurrentCode, selectCurrentUser } from '@/redux/features/auth/auth.slice';
 import { useEffect, useState } from 'react';
+
 import {
   DashboardOutlined,
   LaptopOutlined,
@@ -14,10 +15,19 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { config } from '@/routes';
+import { useGetEmployeeByCodeQuery } from '@/services';
 
 const { Header, Sider, Content } = Layout;
+
+
+
+
 export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
+  const code = useSelector(selectCurrentCode);
+  const [currentcode, setcurrentcode] = useState<string>('');
+  const { data: response, isLoading } = useGetEmployeeByCodeQuery(code || '');
+
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
@@ -56,7 +66,7 @@ export default function MainLayout() {
       ],
     },
   ];
-  const siderItems: MenuProps['items'] = [
+  const siderItemsForAdmin: MenuProps['items'] = [
     {
       key: 'employeeSiderItem',
       label: <Link to={config.dashboard.root}>Dự án</Link>,
@@ -86,6 +96,16 @@ export default function MainLayout() {
       ],
     },
   ];
+  const siderItemsForEmployee: MenuProps['items'] = [
+    {
+      key: 'employeeSiderItem',
+      label: <Link to={config.dashboard.root}>Dự án</Link>,
+      icon: <DashboardOutlined />,
+    },
+   
+  ];
+ const siderItems = response?.data.role === 'MANAGER' ? siderItemsForAdmin : siderItemsForEmployee;
+
   return (
     user && (
       <BaseLayout>
@@ -131,3 +151,5 @@ export default function MainLayout() {
     )
   );
 }
+
+

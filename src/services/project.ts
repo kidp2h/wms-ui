@@ -16,6 +16,10 @@ export const projectApi = createApi({
       query: () => '/projects',
       providesTags: ['Projects'],
     }),
+    getProjectsbySreach: builder.query<Response<Project[]>, string>({
+      query: (content) => `/projects?code=${content}`,
+      providesTags: ['Projects'],
+    }),
     addProject: builder.mutation<Response<Project>, Pick<Project, 'code' | 'name' | 'description' | 'status' | 'type'|'typeLeave'|'limit'>>({
       query: (body) => ({
         url: `/project`,
@@ -34,5 +38,5 @@ export const projectApi = createApi({
     })
   }),
 });
-export const { useGetProjectByIdQuery, useAddProjectMutation, useGetProjectsQuery, useLazyGetProjectByIdQuery, useRemoveProjectMutation } =
+export const { useGetProjectByIdQuery, useGetProjectsQuery,useGetProjectsbySreachQuery, useAddProjectMutation, useRemoveProjectMutation } =
 projectApi;
