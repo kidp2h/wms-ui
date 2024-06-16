@@ -6,7 +6,7 @@ export const Dashboard = () => {
     {
       key: '1',
       label: 'Chấm công',
-      children: <ProjectSchedule />,
+      children: <ProjectSchedule employeeId={null} isAdmin={false} />,
     },
   ];
   const onChange = () => {};
