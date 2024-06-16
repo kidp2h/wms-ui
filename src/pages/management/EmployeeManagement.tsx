@@ -1,4 +1,4 @@
-import { Employee,Role } from 'wms-types';
+import { Employee, Role } from 'wms-types';
 import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
 import { SearchProps } from 'antd/es/input';
 import React, { useEffect, useState } from 'react';
@@ -29,7 +29,7 @@ const { Search } = Input;
 
 export const EmployeeManagement = () => {
   const code = useSelector(selectCurrentCode);
-  const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
+  const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isLoading, refetch } = useGetEmployeesQuery();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
@@ -53,10 +53,10 @@ export const EmployeeManagement = () => {
   };
   const navigate = useNavigate();
   useEffect(() => {
-    if((currentuser?.data.role == Role.EMPLOYEE)){
+    if (currentuser?.data?.role == Role.EMPLOYEE) {
       navigate('/');
     }
-   
+
     if (response != undefined && response.data) {
       setEmployees([...response?.data!]);
     }

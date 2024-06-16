@@ -8,10 +8,10 @@ export const employeeApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Employees'],
   endpoints: (builder) => ({
-    getEmployeeById: builder.query<Employee, string>({
+    getEmployeeById: builder.query<Response<Employee>, string>({
       query: (id) => `/employee/${id}`,
     }),
-    getEmployeeByCode: builder.query<Employee, string>({
+    getEmployeeByCode: builder.query<Response<Employee>, string>({
       query: (code) => `/employee?code=${code}`,
     }),
     getEmployees: builder.query<Response<Employee[]>, void>({

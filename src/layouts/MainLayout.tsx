@@ -2,7 +2,10 @@ import { useNavigate, Outlet, Link } from 'react-router-dom';
 import BaseLayout from './BaseLayout';
 import { Avatar, Button, Layout, Menu, MenuProps, theme } from 'antd';
 import { useSelector } from 'react-redux';
-import { selectCurrentCode, selectCurrentUser } from '@/redux/features/auth/auth.slice';
+import {
+  selectCurrentCode,
+  selectCurrentUser,
+} from '@/redux/features/auth/auth.slice';
 import { useEffect, useState } from 'react';
 
 import {
@@ -19,9 +22,6 @@ import { config } from '@/routes';
 import { useGetEmployeeByCodeQuery } from '@/services';
 
 const { Header, Sider, Content } = Layout;
-
-
-
 
 export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
@@ -113,9 +113,11 @@ export default function MainLayout() {
       label: <Link to={config.dashboard.root}>Dự án</Link>,
       icon: <DashboardOutlined />,
     },
-   
   ];
- const siderItems = response?.data.role === 'MANAGER' ? siderItemsForAdmin : siderItemsForEmployee;
+  const siderItems =
+    response?.data?.role === 'MANAGER'
+      ? siderItemsForAdmin
+      : siderItemsForEmployee;
 
   return (
     user && (
@@ -162,5 +164,3 @@ export default function MainLayout() {
     )
   );
 }
-
-
