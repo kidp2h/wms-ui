@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/redux/features/auth/auth.slice';
 import { useEffect, useState } from 'react';
 import {
+  CalendarOutlined,
   DashboardOutlined,
   LaptopOutlined,
   MenuFoldOutlined,
@@ -82,6 +83,16 @@ export default function MainLayout() {
             </Link>
           ),
           icon: <UsergroupAddOutlined />,
+        },
+
+        {
+          key: 'manager_scheduleSiderItem',
+          label: (
+            <Link to={config.dashboard.management.schedule.path}>
+              Điểm danh
+            </Link>
+          ),
+          icon: <CalendarOutlined />,
         },
       ],
     },

@@ -11,6 +11,7 @@ import {
   Dashboard,
   Profile,
 } from '@/pages';
+import { ScheduleManagement } from '@/pages/management/ScheduleManagement';
 
 export const RoutesConfig = () => {
   return (
@@ -28,6 +29,11 @@ export const RoutesConfig = () => {
           <Route
             path={config.dashboard.management.employee.path}
             element={<EmployeeManagement />}
+          />
+
+          <Route
+            path={config.dashboard.management.schedule.path}
+            element={<ScheduleManagement />}
           />
         </Route>
       </Route>
