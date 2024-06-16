@@ -12,7 +12,6 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   values: any;
 }
 
-#ffffff;
 export type EditableCellType = 'string' | 'number' | 'select';
 
 export type ColumnExpand = {

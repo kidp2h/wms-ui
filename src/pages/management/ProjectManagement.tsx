@@ -2,14 +2,20 @@ import { useAddProjectMutation, useGetProjectByIdQuery, useGetProjectsQuery, use
 import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
 import { random } from 'lodash';
 import { useEffect, useState } from 'react';
-import { Project, StatusProject, TypeProject, TypeLeave } from 'wms-types';
+import { Project, StatusProject, TypeProject, TypeLeave, Role } from 'wms-types';
 const { Search } = Input;
 import { SearchProps } from 'antd/es/input';
 import { ColumnType } from 'antd/es/table';
 import { ColumnExpand, EditableCell } from '@/components/shared/EditableCell';
 import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined, StopOutlined } from '@ant-design/icons';
 import SkeletonTable, { SkeletonTableColumnsType } from '@/components/shared/TableSkeleton';
+import { useSelector } from 'react-redux';
+import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
+import { useGetEmployeeByCodeQuery } from '@/services';
+import { useNavigate } from 'react-router-dom';
 export const ProjectManagement = () => {
+  const code = useSelector(selectCurrentCode);
+  const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isError, isLoading, currentData } = useGetProjectsQuery();
   const [removeProject, ProjectRemoved] = useRemoveProjectMutation();
   const [addProject, ProjectAdded] = useAddProjectMutation();
@@ -32,8 +38,12 @@ export const ProjectManagement = () => {
     const row = await form.validateFields()
     console.log(row);
   }
-  useEffect(() => {
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if(currentuser?.role == Role.EMPLOYEE){
+      navigate('/dashboard/management');
+    }
     if (response != undefined) {
       setProjects([...response?.data!])
     }

@@ -45,11 +45,13 @@ export default function Login() {
         initialValues={{ code: 'M00001', password: '1234567' }}
         onFinish={async (data: LoginModel) => {
           const result = await authorize(data);
+          const currentcode = data?.code;
           if (result.data) {
             const { data } = result.data;
             if (data) {
               dispatch(
                 setCredentials({
+                  currentUser:currentcode,
                   accessToken: data.accessToken,
                   refreshToken: data.refreshToken,
                 }),

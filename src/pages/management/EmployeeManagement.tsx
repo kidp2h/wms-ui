@@ -1,4 +1,4 @@
-import { Role, Employee } from 'wms-types';
+import { Employee,Role } from 'wms-types';
 import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
 import { SearchProps } from 'antd/es/input';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import { ColumnExpand, EditableCell } from '@/components/shared/EditableCell';
 import { ColumnType } from 'antd/es/table';
 import {
   useAddEmployeeMutation,
+  useGetEmployeeByCodeQuery,
   useGetEmployeesQuery,
   useRemoveEmployeeMutation,
 } from '@/services';
@@ -21,9 +22,14 @@ import SkeletonTable, {
   SkeletonTableColumnsType,
 } from '@/components/shared/TableSkeleton';
 import { random } from 'lodash';
+import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const { Search } = Input;
 
 export const EmployeeManagement = () => {
+  const code = useSelector(selectCurrentCode);
+  const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isLoading } = useGetEmployeesQuery();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
@@ -45,7 +51,11 @@ export const EmployeeManagement = () => {
     const row = await form.validateFields();
     console.log(row);
   };
+  const navigate = useNavigate();
   useEffect(() => {
+    if(currentuser?.role == Role.EMPLOYEE){
+      navigate('/dashboard/management');
+    }
     if (response != undefined && response.data) {
       setEmployees([...response?.data!]);
     }
