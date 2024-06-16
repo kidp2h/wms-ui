@@ -40,8 +40,11 @@ export const ProjectManagement = () => {
     console.log(row);
   }
 
+  const navigate = useNavigate();
   useEffect(() => {
-   CheckRole(currentuser?.role  || Role.MANAGER)
+    if((currentuser?.data.role == Role.EMPLOYEE)){
+      navigate('/');
+    }
     if (response != undefined) {
       setProjects([...response?.data!])
     }

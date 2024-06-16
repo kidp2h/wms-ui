@@ -104,7 +104,7 @@ export default function MainLayout() {
     },
    
   ];
- const siderItems = response?.role === 'MANAGER' ? siderItemsForAdmin : siderItemsForEmployee;
+ const siderItems = response?.data.role === 'MANAGER' ? siderItemsForAdmin : siderItemsForEmployee;
 
   return (
     user && (

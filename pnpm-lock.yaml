@@ -11,9 +11,6 @@ importers:
       '@ant-design/icons':
         specifier: ^5.3.7
         version: 5.3.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@prisma/client':
-        specifier: ^5.15.0
-        version: 5.15.0(prisma@5.15.0)
       '@reduxjs/toolkit':
         specifier: ^2.2.5
         version: 2.2.5(react-redux@9.1.2(@types/react@18.3.3)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
@@ -160,8 +157,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.11(@types/node@20.12.12)
       wms-types:
-        specifier: ^0.0.8
-        version: 0.0.8(@prisma/client@5.15.0(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4)
+        specifier: ^0.0.9
+        version: 0.0.9(@prisma/client@5.15.0(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4)
 
 packages:
 
@@ -3518,8 +3515,8 @@ packages:
     engines: {node: '>= 8'}
     hasBin: true
 
-  wms-types@0.0.8:
-    resolution: {integrity: sha512-+X8PtjIPtmLRnWc3klK6QP/qssJEwTh2TVm3DCVFuR3kMOuLHAVU6Rd+HYosz3a88n0ZiKQXW3ItD8KJDsMLOw==}
+  wms-types@0.0.9:
+    resolution: {integrity: sha512-lwH+6OihceXJ+N09FkBLOXm21UnqeyLBtDsCTeqXGxOdu65IPrIejPl5nLxKipbDHFApdYGDJDgsAcWT+5mN7A==}
     peerDependencies:
       '@prisma/client': '*'
       prisma-class-generator: '*'
@@ -7371,7 +7368,7 @@ snapshots:
     dependencies:
       isexe: 2.0.0
 
-  wms-types@0.0.8(@prisma/client@5.15.0(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4):
+  wms-types@0.0.9(@prisma/client@5.15.0(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4):
     dependencies:
       '@prisma/client': 5.15.0(prisma@5.15.0)
       prisma-class-generator: 0.2.9(prisma@5.15.0)
