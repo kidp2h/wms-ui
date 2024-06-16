@@ -30,12 +30,12 @@ const { Search } = Input;
 export const EmployeeManagement = () => {
   const code = useSelector(selectCurrentCode);
   const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
-  const { data: response, isLoading } = useGetEmployeesQuery();
+  const { data: response, isLoading, refetch } = useGetEmployeesQuery();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
   const [employees, setEmployees] = useState<Partial<Employee>[]>([]);
-  const [creatingKey, setCreatingKey] = useState<string>('')
-  const [form] = Form.useForm()
+  const [creatingKey, setCreatingKey] = useState<string>('');
+  const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<string>('');
 
   const isEditing = (record: Partial<Employee>) => record.code === editingKey;
@@ -67,7 +67,6 @@ export const EmployeeManagement = () => {
   };
 
   const remove = (record: Partial<Employee>) => {
-
     setCreatingKey('');
     setEmployees(employees.filter((e) => e.code !== record.code));
     if (record.id) removeEmployee(record.id);
