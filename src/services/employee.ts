@@ -11,6 +11,9 @@ export const employeeApi = createApi({
     getEmployeeById: builder.query<Employee, string>({
       query: (id) => `/employee/${id}`,
     }),
+    getEmployeeByCode: builder.query<Employee, string>({
+      query: (code) => `/employee?code=${code}`,
+    }),
     getEmployees: builder.query<Response<Employee[]>, void>({
       query: () => '/employees',
       providesTags: ['Employees'],
@@ -39,6 +42,7 @@ export const employeeApi = createApi({
 
 export const {
   useGetEmployeeByIdQuery,
+  useGetEmployeeByCodeQuery,
   useAddEmployeeMutation,
   useGetEmployeesQuery,
   useLazyGetEmployeeByIdQuery,

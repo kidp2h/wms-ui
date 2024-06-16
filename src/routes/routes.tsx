@@ -25,7 +25,6 @@ export const RoutesConfig = () => {
             path={config.dashboard.management.project.path}
             element={<ProjectManagement />}
           />
-
           <Route
             path={config.dashboard.management.employee.path}
             element={<EmployeeManagement />}
