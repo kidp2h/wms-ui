@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
 import { useNavigate } from 'react-router-dom';
+import { CheckRole } from '../CheckRole';
 export const ProjectManagement = () => {
   const code = useSelector(selectCurrentCode);
   const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
@@ -38,12 +39,9 @@ export const ProjectManagement = () => {
     const row = await form.validateFields()
     console.log(row);
   }
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if(currentuser?.role == Role.EMPLOYEE){
-      navigate('/dashboard/management');
-    }
+   CheckRole(currentuser?.role  || Role.MANAGER)
     if (response != undefined) {
       setProjects([...response?.data!])
     }

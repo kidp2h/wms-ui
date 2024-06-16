@@ -25,6 +25,7 @@ import { random } from 'lodash';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { CheckRole } from '../CheckRole';
 const { Search } = Input;
 
 export const EmployeeManagement = () => {
@@ -51,11 +52,9 @@ export const EmployeeManagement = () => {
     const row = await form.validateFields();
     console.log(row);
   };
-  const navigate = useNavigate();
+  
   useEffect(() => {
-    if(currentuser?.role == Role.EMPLOYEE){
-      navigate('/dashboard/management');
-    }
+    CheckRole(currentuser?.role  || Role.MANAGER)
     if (response != undefined && response.data) {
       setEmployees([...response?.data!]);
     }
