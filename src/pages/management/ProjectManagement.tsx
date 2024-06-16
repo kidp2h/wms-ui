@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
 import { useNavigate } from 'react-router-dom';
-import { CheckRole } from '../CheckRole';
 export const ProjectManagement = () => {
   const code = useSelector(selectCurrentCode);
   const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');

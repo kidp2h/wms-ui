@@ -25,7 +25,6 @@ import { random } from 'lodash';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { CheckRole } from '../CheckRole';
 const { Search } = Input;
 
 export const EmployeeManagement = () => {
