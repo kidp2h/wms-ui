@@ -12,8 +12,12 @@ const slice = createSlice({
     setCredentials: (
       state,
       {
-        payload: {currentUser, accessToken, refreshToken },
-      }: PayloadAction<{currentUser:string; accessToken: string; refreshToken: string }>,
+        payload: { currentUser, accessToken, refreshToken },
+      }: PayloadAction<{
+        currentUser: string;
+        accessToken: string;
+        refreshToken: string;
+      }>,
     ) => {
       state.currentUser = currentUser;
       state.accessToken = accessToken;
@@ -21,7 +25,7 @@ const slice = createSlice({
     },
 
     logout: (state) => {
-      state.currentUser =null
+      state.currentUser = null;
       state.accessToken = null;
       state.refreshToken = null;
     },

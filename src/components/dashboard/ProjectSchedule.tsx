@@ -4,13 +4,14 @@ import {
   DatePicker,
   DatePickerProps,
   Flex,
+  Form,
   Select,
   SelectProps,
   Table,
   Tag,
   notification,
 } from 'antd';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Project, TimeEntryProject, TypeProject } from 'wms-types';
 import SkeletonTable from '../shared/TableSkeleton';
@@ -30,10 +31,13 @@ export type RangeType = {
   end: InfoDate;
   start: InfoDate;
 };
+export type PropsType = {
+  employeeId: string | null;
+  isAdmin: boolean;
+};
 
-export const ProjectSchedule = () => {
+export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   const [range, setRange] = useState<RangeType>();
-
   const [api, contextHolder] = notification.useNotification();
   const [dataSource, setDataSource] = useState<any[]>();
   const [columns, setColumns] = useState<any[]>([]);
@@ -42,8 +46,8 @@ export const ProjectSchedule = () => {
   const [updateTimeEntryEmployee, { isSuccess }] =
     useUpdateTimeEntryEmployeeMutation();
   const { data: responseTimeEntry, refetch: timeEntryRefetch } =
-    useGetTimeEntryEmployeeQuery();
-  const [todayEntry, setTodayEntry] = useState<Partial<TimeEntryProject>[]>([]);
+    useGetTimeEntryEmployeeQuery(employeeId);
+  const [entries, setEntries] = useState<Partial<TimeEntryProject>[]>([]);
   const options: SelectProps['options'] = [
     { value: '0' },
     { value: '4' },
@@ -54,25 +58,50 @@ export const ProjectSchedule = () => {
     value: any,
     timeEntry: TimeEntryProject | null = null,
     projectId?: string,
+    date: Dayjs | null = null,
   ) => {
     if (timeEntry) {
       // INFO: update time entry
-      const newEntries = todayEntry.map((entry) => {
+      const newEntries = entries.map((entry) => {
         if (entry?.id === timeEntry.id) {
-          return {
-            ...entry,
-            hours: Number(value),
-          };
+          console.log(entry, timeEntry, employeeId);
+
+          if (employeeId === null) {
+            return {
+              ...entry,
+              hours: Number(value),
+            };
+          } else
+            return {
+              ...entry,
+              hours: Number(value),
+              employeeId: employeeId,
+            };
         } else return entry;
       });
 
-      setTodayEntry([...newEntries]);
+      setEntries([...newEntries]);
       setIsChange(true);
     } else {
       //TODO: create time entry
+
       if (Number(value) !== 0) {
         setIsChange(true);
-        setTodayEntry([...todayEntry, { hours: Number(value), projectId }]);
+        if (employeeId === null) {
+          setEntries([
+            ...entries,
+            { hours: Number(value), projectId, date: date?.toDate() },
+          ]);
+        } else
+          setEntries([
+            ...entries,
+            {
+              hours: Number(value),
+              projectId,
+              employeeId: employeeId,
+              date: date?.toDate(),
+            },
+          ]);
       }
     }
   };
@@ -80,22 +109,24 @@ export const ProjectSchedule = () => {
     if (responseProject !== undefined && responseTimeEntry !== undefined) {
       refetch();
       timeEntryRefetch();
+      console.log(responseTimeEntry);
 
       const listEntries: TimeEntryProject[] = [];
       responseTimeEntry?.data?.forEach((timeEntry) => {
         const dateTimeEntry = dayjs(timeEntry.date).date();
         const monthTimeEntry = dayjs(timeEntry.date).month() + 1;
         const yearTimeEntry = dayjs(timeEntry.date).year();
-        if (
-          dateTimeEntry === dayjs().date() &&
-          monthTimeEntry === dayjs().month() + 1 &&
-          yearTimeEntry === dayjs().year()
-        ) {
-          listEntries.push(timeEntry);
-        }
+        // if()
+        // if (
+        //   dateTimeEntry === dayjs().date() &&
+        //   monthTimeEntry === dayjs().month() + 1 &&
+        //   yearTimeEntry === dayjs().year()
+        // ) {
+        listEntries.push(timeEntry);
+        // }
       });
 
-      setTodayEntry([...(listEntries || [])]);
+      setEntries([...(listEntries || [])]);
       const _ = orderBy(responseProject?.data, ['type'], ['desc']).map(
         (project: Project) => {
           return {
@@ -196,91 +227,247 @@ export const ProjectSchedule = () => {
                 timeEntry.projectId === project.id
               ) {
                 if (disabled) {
-                  result = (
-                    <Tag
-                      className='w-full text-center font-bold block text-sm py-2'
-                      color='blue'
-                    >
-                      {timeEntry.hours}
-                    </Tag>
-                  );
-                } else {
-                  result = (
-                    <Select
-                      disabled={disabled}
-                      options={options}
-                      size='large'
-                      className='w-full text-center'
-                      onChange={(value) => onSelectTimeEntry(value, timeEntry)}
-                      variant='borderless'
-                      suffixIcon={null}
-                      labelRender={(label) => (
-                        <Tag
-                          className='w-full text-sm font-bold py-2 text-center'
-                          color='green'
-                        >
-                          {label.value}
-                        </Tag>
-                      )}
-                      optionRender={(option) => {
-                        return (
+                  if (isAdmin) {
+                    result = (
+                      <Select
+                        disabled={false}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        onChange={(value) =>
+                          onSelectTimeEntry(value, timeEntry)
+                        }
+                        variant='borderless'
+                        suffixIcon={null}
+                        labelRender={(label) => (
                           <Tag
-                            className='w-full py-2 text-center font-bold '
+                            className='w-full text-sm font-bold py-2 text-center'
+                            color='blue'
+                          >
+                            {label.value}
+                          </Tag>
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold '
+                              color='blue'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: timeEntry.hours }}
+                      />
+                    );
+                  } else {
+                    result = (
+                      <Tag
+                        className='w-full text-center font-bold block text-sm py-2'
+                        color='blue'
+                      >
+                        {timeEntry.hours}
+                      </Tag>
+                    );
+                  }
+                } else {
+                  if (isAdmin) {
+                    result = (
+                      <Select
+                        disabled={false}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        onChange={(value) =>
+                          onSelectTimeEntry(value, timeEntry)
+                        }
+                        variant='borderless'
+                        suffixIcon={null}
+                        labelRender={(label) => (
+                          <Tag
+                            className='w-full text-sm font-bold py-2 text-center'
                             color='green'
                           >
-                            {option.value}
+                            {label.value}
                           </Tag>
-                        );
-                      }}
-                      defaultValue={{ value: timeEntry.hours }}
-                    />
-                  );
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold '
+                              color='green'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: timeEntry.hours }}
+                      />
+                    );
+                  } else
+                    result = (
+                      <Select
+                        disabled={disabled}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        onChange={(value) =>
+                          onSelectTimeEntry(value, timeEntry)
+                        }
+                        variant='borderless'
+                        suffixIcon={null}
+                        labelRender={(label) => (
+                          <Tag
+                            className='w-full text-sm font-bold py-2 text-center'
+                            color='green'
+                          >
+                            {label.value}
+                          </Tag>
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold '
+                              color='green'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: timeEntry.hours }}
+                      />
+                    );
                 }
                 return true;
               } else {
                 if (disabled) {
-                  result = (
-                    <Tag
-                      className='w-full text-center font-bold block text-sm py-2'
-                      color='red'
-                    >
-                      0
-                    </Tag>
-                  );
-                } else {
-                  result = (
-                    <Select
-                      disabled={disabled}
-                      options={options}
-                      size='large'
-                      className='w-full text-center'
-                      variant='borderless'
-                      onChange={(value) =>
-                        onSelectTimeEntry(value, null, project.id)
-                      }
-                      suffixIcon={null}
-                      labelRender={(label) => (
-                        <Tag
-                          className='w-full  text-sm font-bold py-2 text-center'
-                          color='green'
-                        >
-                          {label.value}
-                        </Tag>
-                      )}
-                      optionRender={(option) => {
-                        return (
+                  if (isAdmin) {
+                    result = (
+                      <Select
+                        disabled={false}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        onChange={(value) =>
+                          onSelectTimeEntry(
+                            value,
+                            null,
+                            project.id,
+                            dayjs(`${year}/${month}/${date}`),
+                          )
+                        }
+                        variant='borderless'
+                        suffixIcon={null}
+                        labelRender={(label) => (
                           <Tag
-                            className='w-full py-2 text-center font-bold text-sm'
+                            className='w-full text-sm font-bold py-2 text-center'
+                            color='red'
+                          >
+                            {label.value}
+                          </Tag>
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold '
+                              color='red'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: 0 }}
+                      />
+                    );
+                  } else {
+                    result = (
+                      <Tag
+                        className='w-full text-center font-bold block text-sm py-2'
+                        color='red'
+                      >
+                        0
+                      </Tag>
+                    );
+                  }
+                } else {
+                  if (isAdmin) {
+                    result = (
+                      <Select
+                        disabled={false}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        variant='borderless'
+                        onChange={(value) =>
+                          onSelectTimeEntry(
+                            value,
+                            null,
+                            project.id,
+                            dayjs(`${year}/${month}/${date}`),
+                          )
+                        }
+                        suffixIcon={null}
+                        labelRender={(label) => (
+                          <Tag
+                            className='w-full  text-sm font-bold py-2 text-center'
                             color='green'
                           >
-                            {option.value}
+                            {label.value}
                           </Tag>
-                        );
-                      }}
-                      defaultValue={{ value: 0 }}
-                      defaultActiveFirstOption={true}
-                    />
-                  );
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold text-sm'
+                              color='green'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: 0 }}
+                        defaultActiveFirstOption={true}
+                      />
+                    );
+                  } else
+                    result = (
+                      <Select
+                        disabled={disabled}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        variant='borderless'
+                        onChange={(value) =>
+                          onSelectTimeEntry(
+                            value,
+                            null,
+                            project.id,
+                            dayjs(`${year}/${month}/${date}`),
+                          )
+                        }
+                        suffixIcon={null}
+                        labelRender={(label) => (
+                          <Tag
+                            className='w-full  text-sm font-bold py-2 text-center'
+                            color='green'
+                          >
+                            {label.value}
+                          </Tag>
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold text-sm'
+                              color='green'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: 0 }}
+                        defaultActiveFirstOption={true}
+                      />
+                    );
                 }
               }
             });
@@ -326,7 +513,7 @@ export const ProjectSchedule = () => {
       }
     });
     setColumns(columns);
-  }, [range, todayEntry]);
+  }, [range, entries]);
 
   const onChange: DatePickerProps['onChange'] = (date) => {
     const startOfWeek = date.day(0).add(1, 'day');
@@ -350,8 +537,8 @@ export const ProjectSchedule = () => {
   };
 
   const saveSchedule = () => {
-    if (isChange && todayEntry.length > 0) {
-      updateTimeEntryEmployee(todayEntry);
+    if (isChange && entries.length > 0) {
+      updateTimeEntryEmployee(entries);
       setIsChange(false);
     }
   };
@@ -369,6 +556,7 @@ export const ProjectSchedule = () => {
     <Flex className='flex-col'>
       {contextHolder}
       <DatePicker
+        name='week-picker'
         showNow={false}
         className='mb-5 w-72'
         type='week'

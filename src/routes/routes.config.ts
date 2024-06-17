@@ -19,25 +19,15 @@ export const config = {
         name: 'Management Project',
         title: 'Management Project',
       },
-      role: {
-        path: '/dashboard/management/role',
-        name: 'Management Role',
-        title: 'Management Role',
+      schedule: {
+        path: '/dashboard/management/schedule',
+        name: 'Management Schedule',
+        title: 'Management Schedule',
       },
       employee: {
         path: '/dashboard/management/employee',
         name: 'Management Employee',
         title: 'Management Employee',
-      },
-      action: {
-        path: '/dashboard/management/action',
-        name: 'Management Action',
-        title: 'Management Action',
-      },
-      leave: {
-        path: '/dashboard/management/leave',
-        name: 'Management Leave',
-        title: 'Management Leave',
       },
     },
   },

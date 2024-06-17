@@ -1,4 +1,4 @@
-import { Employee,Role } from 'wms-types';
+import { Employee, Role } from 'wms-types';
 import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
 import { SearchProps } from 'antd/es/input';
 import React, { useEffect, useState } from 'react';
@@ -28,13 +28,14 @@ import { useNavigate } from 'react-router-dom';
 const { Search } = Input;
 
 export const EmployeeManagement = () => {
- 
-  const { data: response, isLoading } = useGetEmployeesQuery();
+  const code = useSelector(selectCurrentCode);
+  const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
+  const { data: response, isLoading, refetch } = useGetEmployeesQuery();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
   const [employees, setEmployees] = useState<Partial<Employee>[]>([]);
-  const [creatingKey, setCreatingKey] = useState<string>('')
-  const [form] = Form.useForm()
+  const [creatingKey, setCreatingKey] = useState<string>('');
+  const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<string>('');
 
   const isEditing = (record: Partial<Employee>) => record.code === editingKey;
@@ -51,7 +52,6 @@ export const EmployeeManagement = () => {
     console.log(row);
   };
   useEffect(() => {
- 
     if (response != undefined && response.data) {
       setEmployees([...response?.data!]);
     }
@@ -62,7 +62,6 @@ export const EmployeeManagement = () => {
   };
 
   const remove = (record: Partial<Employee>) => {
-
     setCreatingKey('');
     setEmployees(employees.filter((e) => e.code !== record.code));
     if (record.id) removeEmployee(record.id);

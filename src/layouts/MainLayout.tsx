@@ -2,10 +2,14 @@ import { useNavigate, Outlet, Link } from 'react-router-dom';
 import BaseLayout from './BaseLayout';
 import { Avatar, Button, Layout, Menu, MenuProps, theme } from 'antd';
 import { useSelector } from 'react-redux';
-import { selectCurrentCode, selectCurrentUser } from '@/redux/features/auth/auth.slice';
+import {
+  selectCurrentCode,
+  selectCurrentUser,
+} from '@/redux/features/auth/auth.slice';
 import { useEffect, useState } from 'react';
 
 import {
+  CalendarOutlined,
   DashboardOutlined,
   LaptopOutlined,
   MenuFoldOutlined,
@@ -19,9 +23,6 @@ import { useGetEmployeeByCodeQuery } from '@/services';
 import { Role } from 'wms-types';
 
 const { Header, Sider, Content } = Layout;
-
-
-
 
 export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
@@ -94,6 +95,16 @@ export default function MainLayout() {
           ),
           icon: <UsergroupAddOutlined />,
         },
+
+        {
+          key: 'manager_scheduleSiderItem',
+          label: (
+            <Link to={config.dashboard.management.schedule.path}>
+              Điểm danh
+            </Link>
+          ),
+          icon: <CalendarOutlined />,
+        },
       ],
     },
   ];
@@ -103,9 +114,9 @@ export default function MainLayout() {
       label: <Link to={config.dashboard.root}>Dự án</Link>,
       icon: <DashboardOutlined />,
     },
-   
   ];
  const siderItems = response?.data.role === Role.MANAGER ? siderItemsForAdmin : siderItemsForEmployee;
+
 
   return (
     user && (
@@ -152,5 +163,3 @@ export default function MainLayout() {
     )
   );
 }
-
-

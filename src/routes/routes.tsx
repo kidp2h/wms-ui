@@ -16,6 +16,7 @@ import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
 import { useEffect } from 'react';
 import { Role } from 'wms-types';
+import { ScheduleManagement } from '@/pages/management/ScheduleManagement';
 
 export const RoutesConfig = () => {
 
@@ -35,6 +36,10 @@ export const RoutesConfig = () => {
           <Route
             path={  config.dashboard.management.project.path}
             element={<ProjectManagement />}
+          />
+          <Route
+            path={config.dashboard.management.schedule.path}
+            element={<ScheduleManagement />}
           />
           <Route
             path={ config.dashboard.management.employee.path}
