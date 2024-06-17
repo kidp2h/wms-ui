@@ -7,6 +7,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
+  ReloadOutlined,
   SaveOutlined,
   StopOutlined,
 } from '@ant-design/icons';
@@ -113,6 +114,9 @@ export const EmployeeManagement = () => {
     }
   };
 
+  const refetchAll = () => {
+    refetch();
+  };
   const onSearch: SearchProps['onSearch'] = (value, _e, info) =>
     console.log(info?.source, value);
   const columns: (ColumnType<Partial<Employee>> & ColumnExpand)[] = [
@@ -283,15 +287,27 @@ export const EmployeeManagement = () => {
             onSearch={onSearch}
             className='h-72 w-fit'
           />
-          <Button
-            onClick={add}
-            disabled={creatingKey != ''}
-            type='primary'
-            shape='round'
-            className='w-10 h-10 flex items-center justify-center'
-          >
-            <PlusOutlined />
-          </Button>
+          <Flex className='flex-row gap-5'>
+            <Button
+              onClick={refetchAll}
+              disabled={creatingKey != ''}
+              type='primary'
+              shape='round'
+              className='w-10 h-10 flex items-center justify-center'
+            >
+              <ReloadOutlined />
+            </Button>
+
+            <Button
+              onClick={add}
+              disabled={creatingKey != ''}
+              type='primary'
+              shape='round'
+              className='w-10 h-10 flex items-center justify-center'
+            >
+              <PlusOutlined />
+            </Button>
+          </Flex>
         </Flex>
         <div className='w-full h-full'>
           <SkeletonTable

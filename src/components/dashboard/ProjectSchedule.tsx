@@ -20,6 +20,7 @@ import {
   useUpdateTimeEntryEmployeeMutation,
 } from '@/services/timeEntry';
 import { orderBy } from 'lodash';
+import { ReloadOutlined } from '@ant-design/icons';
 
 export type InfoDate = {
   day: number;
@@ -42,6 +43,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   const [dataSource, setDataSource] = useState<any[]>();
   const [columns, setColumns] = useState<any[]>([]);
   const [isChange, setIsChange] = useState<boolean>(false);
+  const [totalWeeks, setTotalWeeks] = useState<number>(0);
   const { data: responseProject, isLoading, refetch } = useGetProjectsQuery();
   const [updateTimeEntryEmployee, { isSuccess }] =
     useUpdateTimeEntryEmployeeMutation();
@@ -107,8 +109,8 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   };
   useEffect(() => {
     if (responseProject !== undefined && responseTimeEntry !== undefined) {
-      refetch();
-      timeEntryRefetch();
+      // refetch();
+      // timeEntryRefetch();
       console.log(responseTimeEntry);
 
       const listEntries: TimeEntryProject[] = [];
@@ -136,7 +138,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
           };
         },
       );
-      setDataSource([..._!]);
+      setDataSource([..._!, { key: 'total', project: null, timeEntry: null }]);
     }
   }, [responseProject, responseTimeEntry]);
 
@@ -159,7 +161,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
           title: value,
           dataIndex: 'project',
           render: (project: Project) => {
-            if (project.type === TypeProject.LEAVE) {
+            if (project?.type === TypeProject.LEAVE) {
               return (
                 <Tag
                   color='red'
@@ -170,13 +172,23 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
               );
             }
 
-            if (project.type === TypeProject.OVERTIME) {
+            if (project?.type === TypeProject.OVERTIME) {
               return (
                 <Tag
                   color='warning'
                   className='font-bold uppercase w-full text-center py-2'
                 >
                   OT
+                </Tag>
+              );
+            }
+            if (project === null) {
+              return (
+                <Tag
+                  color='purple'
+                  className='font-bold uppercase w-full text-center py-2'
+                >
+                  Tổng
                 </Tag>
               );
             }
@@ -210,11 +222,38 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
           title,
           dataIndex: 'project',
           render: (project: Project, record: any) => {
+            if (project === null) {
+              let total = 0;
+              entries.forEach((entry) => {
+                const dateTimeEntry = dayjs(entry.date).date();
+                const monthTimeEntry = dayjs(entry.date).month() + 1;
+                const yearTimeEntry = dayjs(entry.date).year();
+
+                if (
+                  dateTimeEntry === date &&
+                  monthTimeEntry === month &&
+                  yearTimeEntry === year
+                ) {
+                  // console.log(`${date}/${month}/${year}`);
+                  total += entry?.hours || 0;
+                }
+              });
+
+              return (
+                <Tag
+                  className='w-full py-2 text-center font-bold '
+                  color='purple'
+                >
+                  {total}
+                </Tag>
+              );
+
+              // console.log('record', record);
+              // console.log(entries);
+            }
+
             const timeEntries = record.timeEntry as TimeEntryProject[];
             let result = null;
-            if (project.type === TypeProject.LEAVE && index == 7) {
-              return null;
-            }
             timeEntries?.some((timeEntry: TimeEntryProject) => {
               const dateTimeEntry = dayjs(timeEntry.date).date();
               const monthTimeEntry = dayjs(timeEntry.date).month() + 1;
@@ -242,7 +281,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                         labelRender={(label) => (
                           <Tag
                             className='w-full text-sm font-bold py-2 text-center'
-                            color='blue'
+                            color='green'
                           >
                             {label.value}
                           </Tag>
@@ -251,7 +290,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                           return (
                             <Tag
                               className='w-full py-2 text-center font-bold '
-                              color='blue'
+                              color='green'
                             >
                               {option.value}
                             </Tag>
@@ -261,13 +300,41 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                       />
                     );
                   } else {
+                    // const currentDate = dayjs().get('date');
+                    // const currentMonth = dayjs().get('month') + 1;
+                    // const currentYear = dayjs().get('year');
+
                     result = (
-                      <Tag
-                        className='w-full text-center font-bold block text-sm py-2'
-                        color='blue'
-                      >
-                        {timeEntry.hours}
-                      </Tag>
+                      <Select
+                        disabled={false}
+                        options={options}
+                        size='large'
+                        className='w-full text-center'
+                        onChange={(value) =>
+                          onSelectTimeEntry(value, timeEntry)
+                        }
+                        variant='borderless'
+                        suffixIcon={null}
+                        labelRender={(label) => (
+                          <Tag
+                            className='w-full text-sm font-bold py-2 text-center'
+                            color='green'
+                          >
+                            {label.value}
+                          </Tag>
+                        )}
+                        optionRender={(option) => {
+                          return (
+                            <Tag
+                              className='w-full py-2 text-center font-bold '
+                              color='green'
+                            >
+                              {option.value}
+                            </Tag>
+                          );
+                        }}
+                        defaultValue={{ value: timeEntry.hours }}
+                      />
                     );
                   }
                 } else {
@@ -361,7 +428,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                         labelRender={(label) => (
                           <Tag
                             className='w-full text-sm font-bold py-2 text-center'
-                            color='red'
+                            color='green'
                           >
                             {label.value}
                           </Tag>
@@ -370,7 +437,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                           return (
                             <Tag
                               className='w-full py-2 text-center font-bold '
-                              color='red'
+                              color='green'
                             >
                               {option.value}
                             </Tag>
@@ -380,14 +447,83 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                       />
                     );
                   } else {
-                    result = (
-                      <Tag
-                        className='w-full text-center font-bold block text-sm py-2'
-                        color='red'
-                      >
-                        0
-                      </Tag>
+                    const now = dayjs();
+                    const dateStart = range?.start?.object.date();
+                    const monthStart = range?.start?.object?.month() + 1;
+                    const yearStart = range?.start?.object.year();
+                    const dateEnd = range?.end?.object.date();
+                    const monthEnd = range?.end?.object.month() + 1;
+                    const yearEnd = range?.end?.object.year();
+                    const between = now.isBetween(
+                      `${yearStart}/${monthStart}/${dateStart}`,
+                      `${yearEnd}/${monthEnd}/${dateEnd}`,
+                      'days',
+                      '[)',
                     );
+                    if (between) {
+                      result = (
+                        <Select
+                          disabled={false}
+                          options={options}
+                          size='large'
+                          className='w-full text-center'
+                          onChange={(value) =>
+                            onSelectTimeEntry(
+                              value,
+                              null,
+                              project.id,
+                              dayjs(`${year}/${month}/${date}`),
+                            )
+                          }
+                          variant='borderless'
+                          suffixIcon={null}
+                          labelRender={(label) => (
+                            <Tag
+                              className='w-full text-sm font-bold py-2 text-center'
+                              color='green'
+                            >
+                              {label.value}
+                            </Tag>
+                          )}
+                          optionRender={(option) => {
+                            return (
+                              <Tag
+                                className='w-full py-2 text-center font-bold '
+                                color='green'
+                              >
+                                {option.value}
+                              </Tag>
+                            );
+                          }}
+                          defaultValue={{ value: 0 }}
+                        />
+                      );
+                    } else {
+                      // console.log(
+                      //   `${yearEnd}/${monthEnd}/${dateEnd}`,
+                      //   dayjs().isAfter(`${yearEnd}/${monthEnd}/${dateEnd}`),
+                      // );
+
+                      if (dayjs().isBefore(`${yearEnd}/${monthEnd}/${dateEnd}`))
+                        result = (
+                          <Tag
+                            className='w-full text-center font-bold block text-sm py-2'
+                            color='gray'
+                          >
+                            0
+                          </Tag>
+                        );
+                      else {
+                        result = (
+                          <Tag
+                            className='w-full text-center font-bold block text-sm py-2'
+                            color='red'
+                          >
+                            0
+                          </Tag>
+                        );
+                      }
+                    }
                   }
                 } else {
                   if (isAdmin) {
@@ -513,14 +649,19 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
       }
     });
     setColumns(columns);
+    // console.log(tempTotalWeeks);
   }, [range, entries]);
+
+  useEffect(() => {
+    console.log('totalWeeks', totalWeeks);
+  }, [totalWeeks]);
 
   const onChange: DatePickerProps['onChange'] = (date) => {
     const startOfWeek = date.day(0).add(1, 'day');
 
     const endOfWeek = startOfWeek.add(7, 'day');
 
-    setRange({
+    const _range = {
       start: {
         day: startOfWeek.get('D'),
         object: startOfWeek,
@@ -533,7 +674,42 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
         object: endOfWeek,
         year: endOfWeek.year(),
       },
-    });
+    };
+    setRange(_range);
+
+    let total = 0;
+
+    const dateStart = _range?.start?.object?.date();
+    const monthStart = _range?.start?.object?.month() + 1;
+    const yearStart = _range?.start?.object?.year();
+
+    const dateEnd = _range?.end?.object?.date();
+    const monthEnd = _range?.end?.object?.month() + 1;
+    const yearEnd = _range?.end?.object?.year();
+
+    if (entries) {
+      entries.forEach((entry) => {
+        const dateTimeEntry = dayjs(entry.date).date();
+        const monthTimeEntry = dayjs(entry.date).month() + 1;
+        const yearTimeEntry = dayjs(entry.date).year();
+
+        const current = dayjs(
+          `${yearTimeEntry}/${monthTimeEntry}/${dateTimeEntry}`,
+        );
+
+        const between = current.isBetween(
+          `${yearStart}/${monthStart}/${dateStart}`,
+          `${yearEnd}/${monthEnd}/${dateEnd}`,
+          'days',
+          '[)',
+        );
+        if (between) {
+          total += entry.hours || 0;
+        }
+      });
+      console.log('total', total);
+      setTotalWeeks(total);
+    }
   };
 
   const saveSchedule = () => {
@@ -552,18 +728,33 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     }
   }, [isSuccess]);
 
+  const refetchAll = () => {
+    refetch();
+    timeEntryRefetch();
+  };
   return (
     <Flex className='flex-col'>
       {contextHolder}
-      <DatePicker
-        name='week-picker'
-        showNow={false}
-        className='mb-5 w-72'
-        type='week'
-        picker='week'
-        onChange={onChange}
-        allowClear={false}
-      />
+      <Flex className='mb-5 gap-5'>
+        <DatePicker
+          name='week-picker'
+          showNow={false}
+          className='w-72'
+          type='week'
+          picker='week'
+          onChange={onChange}
+          allowClear={false}
+        />
+
+        <Button
+          onClick={refetchAll}
+          type='primary'
+          shape='round'
+          className='w-10 h-10 flex items-center justify-center'
+        >
+          <ReloadOutlined />
+        </Button>
+      </Flex>
 
       {range && (
         <>
@@ -577,13 +768,21 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
             ></Table>
           </SkeletonTable>
 
-          <Button
-            className='mt-5 w-20 ml-auto'
-            onClick={saveSchedule}
-            type='primary'
-          >
-            Lưu
-          </Button>
+          <Flex className='items-center mt-5 '>
+            <Tag
+              color='red'
+              className=' font-bold uppercase w-20 text-center flex justify-center items-center  h-12'
+            >
+              Tổng: {totalWeeks}
+            </Tag>
+            <Button
+              className='w-20 h-12 ml-auto'
+              onClick={saveSchedule}
+              type='primary'
+            >
+              Lưu
+            </Button>
+          </Flex>
         </>
       )}
     </Flex>

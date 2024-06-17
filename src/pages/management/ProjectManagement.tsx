@@ -2,8 +2,8 @@ import {
   useAddProjectMutation,
   useGetProjectsQuery,
   useRemoveProjectMutation,
-  useGetProjectsbySreachQuery,
-  useGetProjectByIdQuery,
+  useUpdateProjectMutation,
+  useSearchProjectQuery,
 } from '@/services/project';
 import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
 import { random } from 'lodash';
@@ -25,6 +25,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
+  ReloadOutlined,
   SaveOutlined,
   StopOutlined,
 } from '@ant-design/icons';
@@ -34,23 +35,24 @@ import SkeletonTable, {
 import { useSelector } from 'react-redux';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
-import { useNavigate } from 'react-router-dom';
 export const ProjectManagement = () => {
-
   const code = useSelector(selectCurrentCode);
-  const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
+  const { data: currentUser } = useGetEmployeeByCodeQuery(code || '');
   const {
     data: response,
     isError,
     isLoading,
     currentData,
+    refetch,
   } = useGetProjectsQuery();
   const [removeProject, ProjectRemoved] = useRemoveProjectMutation();
   const [addProject, ProjectAdded] = useAddProjectMutation();
+
+  const [updateProject, projectUpdated] = useUpdateProjectMutation();
   const [Projects, setProjects] = useState<Partial<Project>[]>([]);
   const [creatingKey, setCreatingKey] = useState<string>('');
   const [search, setSearch] = useState<string>('');
-  const { data: project1 } = useGetProjectsbySreachQuery(search);
+  const { data: projectSearch } = useSearchProjectQuery(search);
 
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<string>('');
@@ -64,15 +66,16 @@ export const ProjectManagement = () => {
   const save = async (record: Partial<Project>) => {
     setEditingKey('');
     const row = await form.validateFields();
+
+    updateProject({ ...record, ...row });
     console.log(row);
   };
 
   useEffect(() => {
-   
     if (response != undefined && response.data) {
-      setProjects([...response?.data!])
+      setProjects([...response?.data!]);
     }
-  }, [response ])
+  }, [response]);
   const cancel = () => {
     setEditingKey('');
   };
@@ -93,6 +96,10 @@ export const ProjectManagement = () => {
     setCreatingKey('');
     setEditingKey('');
     setProjects(Projects.filter((e) => e.code !== record.code));
+  };
+
+  const refetchAll = () => {
+    refetch();
   };
   const applyAdd = async (key: string) => {
     try {
@@ -128,9 +135,9 @@ export const ProjectManagement = () => {
       setProjects([...response?.data!]);
     } else {
       setSearch(value);
-      if (project1 != undefined) {
-        console.log(project1?.data);
-        setProjects([...project1?.data!]);
+      if (projectSearch != undefined) {
+        console.log(projectSearch?.data);
+        setProjects([...projectSearch?.data!]);
       }
     }
   };
@@ -310,15 +317,28 @@ export const ProjectManagement = () => {
             onSearch={onSearch}
             className='h-72 w-fit'
           />
-          <Button
-            onClick={add}
-            disabled={creatingKey != ''}
-            type='primary'
-            shape='round'
-            className='w-10 h-10 flex items-center justify-center'
-          >
-            <PlusOutlined />
-          </Button>
+
+          <Flex className='flex-row gap-5'>
+            <Button
+              onClick={refetchAll}
+              disabled={creatingKey != ''}
+              type='primary'
+              shape='round'
+              className='w-10 h-10 flex items-center justify-center'
+            >
+              <ReloadOutlined />
+            </Button>
+
+            <Button
+              onClick={add}
+              disabled={creatingKey != ''}
+              type='primary'
+              shape='round'
+              className='w-10 h-10 flex items-center justify-center'
+            >
+              <PlusOutlined />
+            </Button>
+          </Flex>
         </Flex>
         <div className='w-full h-full'>
           <SkeletonTable
