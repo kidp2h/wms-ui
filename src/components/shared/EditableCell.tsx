@@ -9,6 +9,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   record: unknown;
   index: number;
   type: EditableCellType;
+  hide: boolean;
   values: any;
 }
 
@@ -18,6 +19,7 @@ export type ColumnExpand = {
   type?: EditableCellType;
   editable?: boolean;
   values?: Enum;
+  hide?: boolean;
 };
 export const EditableCell: React.FC<
   React.PropsWithChildren<EditableCellProps>
@@ -30,6 +32,7 @@ export const EditableCell: React.FC<
   index,
   children,
   type,
+  hide,
   values,
   ...restProps
 }) => {
@@ -37,19 +40,25 @@ export const EditableCell: React.FC<
 
   let inputNode = null;
 
-  if (type == 'string') {
+  if (hide === true) {
+    // alert('hide');
+
     inputNode = <Input className='w-full' />;
-  } else if (type == 'number') {
-    inputNode = <InputNumber />;
-  } else if (type == 'select') {
-    // console.log(typeof (editing));
+  } else {
+    if (type == 'string') {
+      inputNode = <Input className='w-full' />;
+    } else if (type == 'number') {
+      inputNode = <InputNumber />;
+    } else if (type == 'select') {
+      // console.log(typeof (editing));
 
-    const options = values?.map((value: any) => ({
-      value: value,
-      label: value,
-    }));
+      const options = values?.map((value: any) => ({
+        value: value,
+        label: value,
+      }));
 
-    inputNode = <Select className='w-full' options={options} />;
+      inputNode = <Select className='w-full' options={options} />;
+    }
   }
 
   return (
