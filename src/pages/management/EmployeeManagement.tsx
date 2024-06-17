@@ -28,8 +28,7 @@ import { useNavigate } from 'react-router-dom';
 const { Search } = Input;
 
 export const EmployeeManagement = () => {
-  const code = useSelector(selectCurrentCode);
-  const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
+ 
   const { data: response, isLoading } = useGetEmployeesQuery();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
@@ -51,12 +50,8 @@ export const EmployeeManagement = () => {
     const row = await form.validateFields();
     console.log(row);
   };
-  const navigate = useNavigate();
   useEffect(() => {
-    if((currentuser?.data.role == Role.EMPLOYEE)){
-      navigate('/');
-    }
-   
+ 
     if (response != undefined && response.data) {
       setEmployees([...response?.data!]);
     }

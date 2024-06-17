@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import { config } from '@/routes';
 import { useGetEmployeeByCodeQuery } from '@/services';
+import { Role } from 'wms-types';
 
 const { Header, Sider, Content } = Layout;
 
@@ -104,7 +105,7 @@ export default function MainLayout() {
     },
    
   ];
- const siderItems = response?.data.role === 'MANAGER' ? siderItemsForAdmin : siderItemsForEmployee;
+ const siderItems = response?.data.role === Role.MANAGER ? siderItemsForAdmin : siderItemsForEmployee;
 
   return (
     user && (

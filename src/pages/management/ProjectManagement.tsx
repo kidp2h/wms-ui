@@ -14,8 +14,7 @@ import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
 import { useNavigate } from 'react-router-dom';
 export const ProjectManagement = () => {
-  const code = useSelector(selectCurrentCode);
-  const { data: currentuser  } = useGetEmployeeByCodeQuery(code || '');
+ 
   const { data: response, isError, isLoading, currentData } = useGetProjectsQuery();
   const [removeProject, ProjectRemoved] = useRemoveProjectMutation();
   const [addProject, ProjectAdded] = useAddProjectMutation();
@@ -39,15 +38,12 @@ export const ProjectManagement = () => {
     console.log(row);
   }
 
-  const navigate = useNavigate();
   useEffect(() => {
-    if((currentuser?.data.role == Role.EMPLOYEE)){
-      navigate('/');
-    }
-    if (response != undefined) {
+   
+    if (response != undefined && response.data) {
       setProjects([...response?.data!])
     }
-  }, [response])
+  }, [response ])
   const cancel = () => {
     setEditingKey('');
   };
