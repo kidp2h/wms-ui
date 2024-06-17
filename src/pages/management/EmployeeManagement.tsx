@@ -51,12 +51,7 @@ export const EmployeeManagement = () => {
     const row = await form.validateFields();
     console.log(row);
   };
-  const navigate = useNavigate();
   useEffect(() => {
-    if (currentuser?.data?.role == Role.EMPLOYEE) {
-      navigate('/');
-    }
-
     if (response != undefined && response.data) {
       setEmployees([...response?.data!]);
     }
