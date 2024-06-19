@@ -16,9 +16,6 @@ import { setCredentials } from '@/redux/features/auth/auth.slice';
 const FormItem = Form.Item;
 
 export default function Login() {
-  // TODO:
-  // WARN:
-  //
   const dispatch = useDispatch();
   const [authorize, { isLoading, isSuccess, isError }] = useAuthorizeMutation();
   const navigate = useNavigate();
@@ -51,7 +48,7 @@ export default function Login() {
             if (data) {
               dispatch(
                 setCredentials({
-                  currentUser:currentcode,
+                  currentUser: currentcode,
                   accessToken: data.accessToken,
                   refreshToken: data.refreshToken,
                 }),
