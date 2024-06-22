@@ -1,5 +1,5 @@
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Project } from 'wms-types';
+import { Project, Project } from 'wms-types';
 import { Response } from '.';
 import { setCredentials } from '@/redux/features/auth/auth.slice';
 import { baseQueryWithReauth } from './api';
@@ -35,7 +35,9 @@ export const projectApi = createApi({
       }),
 
       invalidatesTags: ['Projects']
-    })
+    }),
+    
+
   }),
 });
 export const { useGetProjectByIdQuery, useGetProjectsQuery,useGetProjectsbySreachQuery, useAddProjectMutation, useRemoveProjectMutation } =
