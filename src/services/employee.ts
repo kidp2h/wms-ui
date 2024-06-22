@@ -18,6 +18,14 @@ export const employeeApi = createApi({
       query: () => '/employees',
       providesTags: ['Employees'],
     }),
+    updateEmployee: builder.mutation<Response<Employee>, Partial<Employee>>({
+      query: (body) => ({
+        url: `/employee/${body.id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Employees'],
+    }),
     addEmployee: builder.mutation<
       Response<Employee>,
       Pick<Employee, 'code' | 'role' | 'email' | 'password' | 'fullname'>
@@ -47,4 +55,5 @@ export const {
   useGetEmployeesQuery,
   useLazyGetEmployeeByIdQuery,
   useRemoveEmployeeMutation,
+  useUpdateEmployeeMutation,
 } = employeeApi;

@@ -7,6 +7,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
+  ReloadOutlined,
   SaveOutlined,
   StopOutlined,
 } from '@ant-design/icons';
@@ -17,6 +18,7 @@ import {
   useGetEmployeeByCodeQuery,
   useGetEmployeesQuery,
   useRemoveEmployeeMutation,
+  useUpdateEmployeeMutation,
 } from '@/services';
 import SkeletonTable, {
   SkeletonTableColumnsType,
@@ -32,6 +34,7 @@ export const EmployeeManagement = () => {
   const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isLoading, refetch } = useGetEmployeesQuery();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
+  const [updateEmployee, employeeUpdated] = useUpdateEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
   const [employees, setEmployees] = useState<Partial<Employee>[]>([]);
   const [creatingKey, setCreatingKey] = useState<string>('');
@@ -42,14 +45,15 @@ export const EmployeeManagement = () => {
   const edit = (record: Partial<Employee>) => {
     console.log({ ...record });
 
-    form.setFieldsValue({ ...record });
+    form.setFieldsValue({ ...record, password: '' });
     setEditingKey(record.code!);
   };
 
   const save = async (record: Partial<Employee>) => {
     setEditingKey('');
     const row = await form.validateFields();
-    console.log(row);
+
+    updateEmployee({ ...record, ...row });
   };
   useEffect(() => {
     if (response != undefined && response.data) {
@@ -110,6 +114,9 @@ export const EmployeeManagement = () => {
     }
   };
 
+  const refetchAll = () => {
+    refetch();
+  };
   const onSearch: SearchProps['onSearch'] = (value, _e, info) =>
     console.log(info?.source, value);
   const columns: (ColumnType<Partial<Employee>> & ColumnExpand)[] = [
@@ -122,6 +129,7 @@ export const EmployeeManagement = () => {
       title: 'Mật khẩu',
       dataIndex: 'password',
       editable: true,
+      hide: true,
       render: () => {
         return '****';
       },
@@ -244,6 +252,8 @@ export const EmployeeManagement = () => {
     if (!col.editable) {
       return col;
     }
+    console.log(col);
+
     return {
       ...col,
       onCell: (record: Partial<Employee>) => ({
@@ -252,10 +262,13 @@ export const EmployeeManagement = () => {
         dataindex: col.dataIndex,
         editing: isEditing(record) ? true : false,
         type: col.type || 'string',
-        values: col?.values || null,
+        values: col.hide === true ? '' : col?.values,
+        hide: col.hide === true,
       }),
     };
   });
+  console.log(mappedColumn);
+
   // const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   // const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
   //   setSelectedRowKeys(newSelectedRowKeys);
@@ -274,15 +287,27 @@ export const EmployeeManagement = () => {
             onSearch={onSearch}
             className='h-72 w-fit'
           />
-          <Button
-            onClick={add}
-            disabled={creatingKey != ''}
-            type='primary'
-            shape='round'
-            className='w-10 h-10 flex items-center justify-center'
-          >
-            <PlusOutlined />
-          </Button>
+          <Flex className='flex-row gap-5'>
+            <Button
+              onClick={refetchAll}
+              disabled={creatingKey != ''}
+              type='primary'
+              shape='round'
+              className='w-10 h-10 flex items-center justify-center'
+            >
+              <ReloadOutlined />
+            </Button>
+
+            <Button
+              onClick={add}
+              disabled={creatingKey != ''}
+              type='primary'
+              shape='round'
+              className='w-10 h-10 flex items-center justify-center'
+            >
+              <PlusOutlined />
+            </Button>
+          </Flex>
         </Flex>
         <div className='w-full h-full'>
           <SkeletonTable

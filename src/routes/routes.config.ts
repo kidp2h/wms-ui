@@ -1,3 +1,5 @@
+import path from 'path';
+
 export const config = {
   auth: {
     root: '/auth',
@@ -5,29 +7,48 @@ export const config = {
   },
   root: '/',
   logout: '/logout',
-  dashboard: {
+  system: {
     root: '/',
-    profile: '/dashboard/profile',
-    management: {
-      root: {
-        path: '/dashboard/management',
-        name: 'Management',
-        title: 'Management',
-      },
-      project: {
-        path: '/dashboard/management/project',
-        name: 'Management Project',
-        title: 'Management Project',
+    employee: {
+      profile: {
+        path: '/employee/profile',
+        key: 'profile',
       },
       schedule: {
-        path: '/dashboard/management/schedule',
+        path: '/employee/schedule',
+        key: 'schedule',
+      },
+    },
+    dashboard: {
+      path: '/employee/dashboard',
+      name: 'Dashboard',
+      key: 'dashboard',
+    },
+    management: {
+      root: {
+        path: '/management',
+        name: 'Management',
+        title: 'Management',
+        key: 'management',
+      },
+      project: {
+        path: '/management/project',
+        name: 'Management Project',
+        title: 'Management Project',
+
+        key: 'project_management',
+      },
+      schedule: {
+        path: '/management/schedule',
         name: 'Management Schedule',
         title: 'Management Schedule',
+        key: 'schedule_management',
       },
       employee: {
-        path: '/dashboard/management/employee',
+        path: '/management/employee',
         name: 'Management Employee',
         title: 'Management Employee',
+        key: 'employee_management',
       },
     },
   },

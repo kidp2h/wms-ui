@@ -1,12 +1,12 @@
+import { ProjectSchedule } from '@/components/schedules/ProjectSchedule';
 import { Flex, Tabs, TabsProps } from 'antd';
-import { Statistics } from './Statistics';
 
-export const Dashboard = () => {
+export const EmployeeSchedule = () => {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: 'Thống kê',
-      children: <Statistics />,
+      label: 'Chấm công',
+      children: <ProjectSchedule employeeId={null} isAdmin={false} />,
     },
   ];
   const onChange = () => {};

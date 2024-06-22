@@ -1,4 +1,4 @@
-import { useNavigate, Outlet, Link } from 'react-router-dom';
+import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import BaseLayout from './BaseLayout';
 import { Avatar, Button, Layout, Menu, MenuProps, theme } from 'antd';
 import { useSelector } from 'react-redux';
@@ -35,11 +35,15 @@ export default function MainLayout() {
     token: { colorBgContainer },
   } = theme.useToken();
   const navigate = useNavigate();
+
+  const location = useLocation();
   useEffect(() => {
     if (!user) {
       navigate('/auth/login');
     }
   }, [user]);
+  console.log(location);
+
   const headerItem: MenuProps['items'] = [
     {
       key: 'headerName',
@@ -58,8 +62,12 @@ export default function MainLayout() {
       ),
       children: [
         {
-          key: 'profile',
-          label: <Link to={config.dashboard.profile}>Cài đặt thông tin</Link>,
+          key: config.system.employee.profile.path,
+          label: (
+            <Link to={config.system.employee.profile.path}>
+              Cài đặt thông tin
+            </Link>
+          ),
         },
         {
           key: 'logout',
@@ -70,38 +78,27 @@ export default function MainLayout() {
   ];
   const siderItemsForAdmin: MenuProps['items'] = [
     {
-      key: 'employeeSiderItem',
-      label: <Link to={config.dashboard.root}>Dự án</Link>,
-      icon: <DashboardOutlined />,
-    },
-    {
-      key: 'managerSiderItem',
+      key: config.system.management.root.key,
       label: 'Quản lý',
       icon: <LaptopOutlined />,
       children: [
         {
-          key: 'manager_projectSiderItem',
-          label: (
-            <Link to={config.dashboard.management.project.path}>Dự án</Link>
-          ),
+          key: config.system.management.project.path,
+          label: <Link to={config.system.management.project.path}>Dự án</Link>,
           icon: <ProjectOutlined />,
         },
         {
-          key: 'manager_employeeSiderItem',
+          key: config.system.management.employee.path,
           label: (
-            <Link to={config.dashboard.management.employee.path}>
-              Nhân viên
-            </Link>
+            <Link to={config.system.management.employee.path}>Nhân viên</Link>
           ),
           icon: <UsergroupAddOutlined />,
         },
 
         {
-          key: 'manager_scheduleSiderItem',
+          key: config.system.management.schedule.path,
           label: (
-            <Link to={config.dashboard.management.schedule.path}>
-              Điểm danh
-            </Link>
+            <Link to={config.system.management.schedule.path}>Điểm danh</Link>
           ),
           icon: <CalendarOutlined />,
         },
@@ -110,13 +107,20 @@ export default function MainLayout() {
   ];
   const siderItemsForEmployee: MenuProps['items'] = [
     {
-      key: 'employeeSiderItem',
-      label: <Link to={config.dashboard.root}>Dự án</Link>,
+      key: config.system.dashboard.path,
+      label: <Link to={config.system.dashboard.path}>Dashboard </Link>,
       icon: <DashboardOutlined />,
     },
+    {
+      key: config.system.employee.schedule.path,
+      label: <Link to={config.system.employee.schedule.path}>Chấm công </Link>,
+      icon: <CalendarOutlined />,
+    },
   ];
- const siderItems = response?.data.role === Role.MANAGER ? siderItemsForAdmin : siderItemsForEmployee;
-
+  const siderItems =
+    response?.data?.role === Role.MANAGER
+      ? [...siderItemsForEmployee, ...siderItemsForAdmin]
+      : siderItemsForEmployee;
 
   return (
     user && (
@@ -147,8 +151,7 @@ export default function MainLayout() {
           >
             <Menu
               mode='inline'
-              defaultSelectedKeys={['1']}
-              defaultOpenKeys={['sub1']}
+              defaultSelectedKeys={[location.pathname]}
               style={{ height: '100%', borderRight: 0 }}
               items={siderItems}
             />
