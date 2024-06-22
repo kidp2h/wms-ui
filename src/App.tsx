@@ -7,8 +7,10 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import isBetween from 'dayjs/plugin/isBetween';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(updateLocale);
+dayjs.extend(utc);
 dayjs.updateLocale('vi-VN', {});
 // import AdvancedFormat from 'dayjs/plugin/advancedFormat' // ES 2015
 

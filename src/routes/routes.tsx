@@ -8,7 +8,6 @@ import {
   EmployeeManagement,
   NotFound,
   ProjectManagement,
-  Dashboard,
   Profile,
 } from '@/pages';
 import { useSelector } from 'react-redux';
@@ -16,6 +15,8 @@ import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
 import { Role } from 'wms-types';
 import { ScheduleManagement } from '@/pages/management/ScheduleManagement';
+import { EmployeeSchedule } from '@/pages/EmployeeSchedule';
+import { Dashboard } from '@/pages/Dashboard';
 
 export const RoutesConfig = () => {
   const code = useSelector(selectCurrentCode);
@@ -24,29 +25,47 @@ export const RoutesConfig = () => {
   return (
     <Routes>
       <Route path={config.logout} element={<Logout />}></Route>
-      <Route path={config.dashboard.root} Component={MainLayout}>
-        <Route path={config.dashboard.profile} element={<Profile />} />
-        <Route index element={<Dashboard />} />
-        <Route path={config.dashboard.management.root.path}>
-          {currentuser?.data?.role == Role.MANAGER ? (
+      <Route path={config.system.root} Component={MainLayout}>
+        <Route
+          path={config.system.employee.profile.path}
+          element={<Profile />}
+          key='profile'
+        />
+        <Route
+          path={config.system.dashboard.path}
+          element={<Dashboard />}
+          key='dasboard'
+          index
+        />
+        <Route
+          path={config.system.employee.schedule.path}
+          element={<EmployeeSchedule />}
+          key='employee_schedule'
+        />
+
+        {currentuser?.data?.role == Role.MANAGER ? (
+          <Route path={config.system.management.root.path}>
             <>
               <Route
-                path={config.dashboard.management.project.path}
+                path={config.system.management.project.path}
+                key='project_management'
                 element={<ProjectManagement />}
               />
               <Route
-                path={config.dashboard.management.schedule.path}
+                path={config.system.management.schedule.path}
+                key='schedule_management'
                 element={<ScheduleManagement />}
               />
               <Route
-                path={config.dashboard.management.employee.path}
+                key='employee_management'
+                path={config.system.management.employee.path}
                 element={<EmployeeManagement />}
               />
             </>
-          ) : (
-            <Route index element={<Dashboard />} />
-          )}
-        </Route>
+          </Route>
+        ) : (
+          <> </>
+        )}
       </Route>
       <Route path='/auth' Component={AuthLayout}>
         <Route index path='/auth/login' element={<Login />} />
