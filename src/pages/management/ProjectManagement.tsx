@@ -191,10 +191,26 @@ export const ProjectManagement = () => {
       ],
     },
     {
-      title: 'Giới hạn Thành viên',
+      title: 'Giới hạn Nghỉ phép',
       dataIndex: 'limit',
       editable: true,
       type: 'number',
+    },
+    {
+      title: ' thời hạn dự án',
+      key:'',
+      editable: false,
+      render: (_: any, record: Partial<Project>) => {
+        
+        const dateObject = new Date(record.startedAt||'');
+        const dateend = new Date()
+        console.log((dateend.getMonth()+3) -  dateObject.getMonth());
+        if (record?.id === undefined) {
+          return (
+             dateend.getMonth() -  dateObject.getMonth()
+          )
+        }
+      }
     },
     {
       title: 'Hành động',
