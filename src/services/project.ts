@@ -15,8 +15,20 @@ export const projectApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Projects'],
   endpoints: (builder) => ({
-    getProjectById: builder.query<Project, string>({
+    getProjectById: builder.query<Response<Project>, string>({
       query: (id) => `/project/${id}`,
+    }),
+    getProjectByEmployee: builder.query<
+      Response<Project>,
+      { id: string; year?: number }
+    >({
+      query: ({ id, year }) => {
+        let url = `/employee/project/${id}`;
+        if (year) {
+          url += `?year=${year}`;
+        }
+        return url;
+      },
     }),
     getProjects: builder.query<Response<Project[]>, void>({
       query: () => '/projects',
@@ -67,6 +79,7 @@ export const projectApi = createApi({
 });
 export const {
   useGetProjectByIdQuery,
+  useGetProjectByEmployeeQuery,
   useGetProjectsQuery,
   useSearchProjectQuery,
   useAddProjectMutation,

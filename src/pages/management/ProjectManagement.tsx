@@ -141,28 +141,35 @@ export const ProjectManagement = () => {
       }
     }
   };
-  const columns: (ColumnType<Partial<Project>> & ColumnExpand)[] = [
+  const columns: (ColumnType<Partial<Project>> & ColumnExpand & any)[] = [
     {
       title: 'Mã dự án',
       dataIndex: 'code',
       editable: false,
+      required: false,
     },
     {
       title: 'Tên dự án',
       dataIndex: 'name',
       editable: true,
+
+      required: true,
     },
-    {
-      title: 'Mô tả dự án',
-      dataIndex: 'description',
-      editable: true,
-      type: 'string',
-    },
+    // {
+    //   title: 'Mô tả dự án',
+    //   dataIndex: 'description',
+    //   editable: true,
+    //   type: 'string',
+
+    //   required: true,
+    // },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       editable: true,
       type: 'select',
+
+      required: true,
       values: [
         StatusProject.COMPLETED,
         StatusProject.NOT_STARTED,
@@ -174,14 +181,19 @@ export const ProjectManagement = () => {
       dataIndex: 'type',
       editable: true,
       type: 'select',
-      values: [TypeProject.LEAVE, TypeProject.OVERTIME, TypeProject.PROJECT],
+      values: [TypeProject.LEAVE, TypeProject.PROJECT],
+
+      required: true,
     },
+
     {
       title: 'Loại nghỉ',
       dataIndex: 'typeLeave',
       editable: true,
       type: 'select',
+      hidden: true,
 
+      required: false,
       values: [
         TypeLeave.ANNUAL,
         TypeLeave.CLASS_SCHEDULE,
@@ -195,26 +207,14 @@ export const ProjectManagement = () => {
       dataIndex: 'limit',
       editable: true,
       type: 'number',
-    },
-    {
-      title: ' thời hạn dự án',
-      key:'',
-      editable: false,
-      render: (_: any, record: Partial<Project>) => {
-        
-        const dateObject = new Date(record.startedAt||'');
-        const dateend = new Date()
-        console.log((dateend.getMonth()+3) -  dateObject.getMonth());
-        if (record?.id === undefined) {
-          return (
-             dateend.getMonth() -  dateObject.getMonth()
-          )
-        }
-      }
+
+      required: true,
     },
     {
       title: 'Hành động',
       key: 'action',
+
+      required: false,
       render: (_: any, record: Partial<Project>) => {
         // console.log(record);
 
@@ -319,6 +319,7 @@ export const ProjectManagement = () => {
         dataindex: col.dataIndex,
         editing: isEditing(record) ? true : false,
         type: col.type || 'string',
+        required: col.required,
         values: col?.values || null,
       }),
     };
