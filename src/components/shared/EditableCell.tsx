@@ -10,6 +10,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   index: number;
   type: EditableCellType;
   hide: boolean;
+  required: boolean;
   values: any;
 }
 
@@ -19,6 +20,7 @@ export type ColumnExpand = {
   type?: EditableCellType;
   editable?: boolean;
   values?: Enum;
+  required: boolean;
   hide?: boolean;
 };
 export const EditableCell: React.FC<
@@ -34,9 +36,10 @@ export const EditableCell: React.FC<
   type,
   hide,
   values,
+  required,
   ...restProps
 }) => {
-  // console.log(restProps);
+  console.log(required);
 
   let inputNode = null;
 
@@ -70,7 +73,7 @@ export const EditableCell: React.FC<
           className='m-0 w-full'
           rules={[
             {
-              required: true,
+              required,
               message: '',
             },
           ]}
