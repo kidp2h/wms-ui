@@ -20,8 +20,7 @@ export const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
+  unknown
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
@@ -38,6 +37,7 @@ export const baseQueryWithReauth: BaseQueryFn<
     if (refreshResult.data) {
       api.dispatch(
         setCredentials({
+          currentUser: null,
           accessToken: (refreshResult.data as any).data.accessToken,
           refreshToken: refreshToken!,
         }),

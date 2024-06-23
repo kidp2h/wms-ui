@@ -14,7 +14,7 @@ const slice = createSlice({
       {
         payload: { currentUser, accessToken, refreshToken },
       }: PayloadAction<{
-        currentUser: string;
+        currentUser: string | null;
         accessToken: string;
         refreshToken: string;
       }>,

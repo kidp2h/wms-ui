@@ -1,9 +1,10 @@
 import { Enum } from '@/types';
-import { Form, Input, InputNumber, Select } from 'antd';
+import { TypeProject } from 'wms-types';
+import { DatePicker, Form, Input, InputNumber, Select } from 'antd';
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
-  dataindex: string;
+  dataIndex: string;
   title: string;
   inputType: any;
   record: unknown;
@@ -12,9 +13,11 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   hide: boolean;
   required: boolean;
   values: any;
+
+  hideWhen?: (record: any) => boolean;
 }
 
-export type EditableCellType = 'string' | 'number' | 'select';
+export type EditableCellType = 'string' | 'number' | 'select' | 'date';
 
 export type ColumnExpand = {
   type?: EditableCellType;
@@ -22,12 +25,13 @@ export type ColumnExpand = {
   values?: Enum;
   required: boolean;
   hide?: boolean;
+  hideWhen?: (record: any) => boolean;
 };
 export const EditableCell: React.FC<
   React.PropsWithChildren<EditableCellProps>
 > = ({
   editing,
-  dataindex,
+  dataIndex,
   title,
   inputType,
   record,
@@ -37,38 +41,52 @@ export const EditableCell: React.FC<
   hide,
   values,
   required,
+  hideWhen,
   ...restProps
 }) => {
   console.log(required);
 
   let inputNode = null;
 
-  if (hide === true) {
-    // alert('hide');
+  // if (hide === true) {
+  //   // alert('hide');
 
-    inputNode = <Input className='w-full' />;
-  } else {
-    if (type == 'string') {
+  //   inputNode = <Input className='w-full' />;
+  // } else {
+  switch (type) {
+    case 'string':
       inputNode = <Input className='w-full' />;
-    } else if (type == 'number') {
+      break;
+    case 'number':
       inputNode = <InputNumber />;
-    } else if (type == 'select') {
-      // console.log(typeof (editing));
-
+      break;
+    case 'select': {
       const options = values?.map((value: any) => ({
         value: value,
         label: value,
       }));
 
       inputNode = <Select className='w-full' options={options} />;
+      break;
     }
+    case 'date': {
+      if (hideWhen) {
+        if (hideWhen(record)) inputNode = '';
+        else inputNode = <DatePicker format='DD/MM/YYYY' />;
+      } else inputNode = <DatePicker format='DD/MM/YYYY' />;
+      break;
+    }
+    default:
+      inputNode = <Input className='w-full' />;
+      break;
   }
+  // }
 
   return (
     <td>
       {editing ? (
         <Form.Item
-          name={dataindex}
+          name={dataIndex}
           style={{ margin: 0 }}
           className='m-0 w-full'
           rules={[

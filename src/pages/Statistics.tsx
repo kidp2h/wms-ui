@@ -5,6 +5,7 @@ import {
   useGetTimeEntryEmployeeQuery,
 } from '@/services';
 import { Card, Flex, Select, SelectProps } from 'antd';
+import { set } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -17,41 +18,27 @@ for (let i = Daynow.getFullYear() - 20; i <= Daynow.getFullYear(); i++) {
   });
 }
 export const Statistics = () => {
-  const code = useSelector(selectCurrentCode);
   const [date, setDate] = useState<number>(Daynow.getFullYear());
-  const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
+  const { data: timeentry } = useGetTimeEntryEmployeeQuery(null);
   const { data: projectsemployee } = useGetProjectByEmployeeQuery({
-    id: currentuser?.data?.id || '',
     year: date,
   });
-  const { data: response } = useGetTimeEntryEmployeeQuery(
-    currentuser?.data?.id || '',
-  );
+
   const [totalProject, setTotalProject] = useState<string>('0');
   const [totalTimeEntry, setTotalTimeEntry] = useState<string>('0');
   const [Leaveday, setLeaveday] = useState<string>('0');
   useEffect(() => {
-    const currentProjects: string[] = [];
-    if (response?.data === undefined) return;
-    const datas =
-      response?.data?.filter(
-        (x) => parseInt(x.date.toString().split('-')[0]) == date,
-      ) || [];
-    setTotalTimeEntry(
-      datas.reduce((acc, current) => acc + current.hours, 0).toString() || '0',
-    );
-    datas.forEach((x) => {
-      if (!currentProjects.includes(x.projectId)) {
-        currentProjects.push(x.projectId);
-      }
-    });
-
-    setTotalProject(currentProjects.length.toString());
-    setLeaveday(
-      projectsemployee?.data
-        .reduce((acc, current) => acc + current.limit, 0)
-        .toString() || '0',
-    );
+    if(projectsemployee?.data){
+    const projects = projectsemployee?.data || [] ;
+    setTotalProject(projects.length.toString());
+    let totalleave = projects.reduce((acc, project) => {acc += project.limit; return acc;}, 0);
+    setLeaveday(totalleave.toString());
+    let totaltime = timeentry?.data?.reduce((acc, time) => {acc += time.hours /*them cai overtime   */  ; return acc;}, 0) || '0';
+    console.log(timeentry?.data);
+    setTotalTimeEntry(totaltime.toString() );
+  }
+  
+  
   }, [date]);
   const handleChange = (value: string) => {
     setDate(parseInt(value));
