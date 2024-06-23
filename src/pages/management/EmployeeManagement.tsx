@@ -124,6 +124,8 @@ export const EmployeeManagement = () => {
       title: 'Mã nhân viên',
       dataIndex: 'code',
       editable: false,
+
+      required: false,
     },
     {
       title: 'Mật khẩu',
@@ -133,18 +135,24 @@ export const EmployeeManagement = () => {
       render: () => {
         return '****';
       },
+
+      required: true,
     },
     {
       title: 'Email',
       dataIndex: 'email',
       editable: true,
       type: 'string',
+
+      required: true,
     },
     {
       title: 'Họ và tên',
       dataIndex: 'fullname',
       editable: true,
       type: 'string',
+
+      required: true,
     },
     {
       title: 'Vai trò',
@@ -152,10 +160,12 @@ export const EmployeeManagement = () => {
       editable: true,
       type: 'select',
       values: [Role.EMPLOYEE, Role.MANAGER],
+      required: true,
     },
     {
       title: 'Hành động',
       key: 'action',
+      required: false,
       render: (_: any, record: Partial<Employee>) => {
         // console.log(record);
 
@@ -281,12 +291,6 @@ export const EmployeeManagement = () => {
     <Card title='Bảng Nhân viên' className='h-full'>
       <Flex vertical>
         <Flex className='justify-between items-start w-full h-12'>
-          <Search
-            placeholder='input search text'
-            allowClear
-            onSearch={onSearch}
-            className='h-72 w-fit'
-          />
           <Flex className='flex-row gap-5'>
             <Button
               onClick={refetchAll}

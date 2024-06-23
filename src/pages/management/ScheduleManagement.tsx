@@ -31,16 +31,6 @@ export const ScheduleManagement = () => {
   return (
     <>
       <Flex className='flex-col'>
-        {/* <Tabs */}
-        {/*   type='card' */}
-        {/*   className='w-full' */}
-        {/*   accessKey={tab || ''} */}
-        {/*   items={tabs} */}
-        {/*   onChange={(key) => { */}
-        {/*     setTab(key); */}
-        {/*   }} */}
-        {/*   destroyInactiveTabPane={false} */}
-        {/* /> */}
         <Select
           showSearch
           placeholder='Chọn nhân viên'

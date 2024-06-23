@@ -44,7 +44,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   const [isChange, setIsChange] = useState<boolean>(false);
   const [totalWeeks, setTotalWeeks] = useState<number>(0);
   const { data: responseProject, isLoading, refetch } = useGetProjectsQuery();
-  const [updateTimeEntryEmployee, { isSuccess }] =
+  const [updateTimeEntryEmployee, { isSuccess, isError, data, error }] =
     useUpdateTimeEntryEmployeeMutation();
   const { data: responseTimeEntry, refetch: timeEntryRefetch } =
     useGetTimeEntryEmployeeQuery(employeeId);
@@ -55,17 +55,28 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     { value: '8' },
   ];
 
+  useEffect(() => {
+    if (isError) {
+      console.log(data, error);
+
+      api.error({
+        message: 'Thông báo',
+        description: (error as any).data.message,
+      });
+      // refetch();
+      // timeEntryRefetch();
+    }
+  }, [isError]);
   const onSelectTimeEntry = (
     value: any,
     timeEntry: TimeEntryProject | null = null,
-    projectId?: string,
+    project?: Project,
 
     date: Dayjs | null = null,
     type: 'overtime' | 'hours' = 'hours',
   ) => {
     setIsChange(true);
-    console.log(date, projectId, timeEntry);
-    // if (Number(value) !== 0) {
+    console.log(date, project.id, timeEntry);
     if (timeEntry) {
       // INFO: update time entry
       const newEntries = entries.map((entry) => {
@@ -99,7 +110,9 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
           {
             [`${type}`]: Number(value),
             employeeId,
-            projectId,
+            projectId: project.id,
+            project,
+
             date: date?.toDate(),
           },
         ];
@@ -109,7 +122,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
         const index = entries.findIndex((entry) => {
           return (
             dayjs(entry.date).isSame(date, 'day') &&
-            entry.projectId === projectId
+            entry.projectId === project.id
           );
         });
         if (index === -1) {
@@ -118,7 +131,8 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
             {
               [`${type}`]: Number(value),
               employeeId,
-              projectId,
+              projectId: project.id,
+              project,
               date: dayjs.utc(date)?.toDate(),
             } as any,
           ]);
@@ -136,7 +150,9 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
               ...entries[index],
               [`${type}`]: Number(value),
               employeeId,
-              projectId,
+
+              projectId: project.id,
+              project,
               date: dayjs.utc(date)?.toDate(),
             } as any);
           }
@@ -183,7 +199,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
       );
       setDataSource([..._!, { key: 'total', project: null, timeEntry: null }]);
     }
-  }, [responseProject, responseTimeEntry]);
+  }, [responseProject, responseTimeEntry, isError]);
 
   const daysOfWeek = [
     'Dự án',
@@ -196,6 +212,8 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     'Chủ nhật',
   ];
   useEffect(() => {
+    console.log('re');
+
     let temp = 0;
     const columns = daysOfWeek.map((value, index) => {
       if (index === 0) {
@@ -356,7 +374,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                       onSelectTimeEntry(
                         value,
                         timeEntry,
-                        project.id,
+                        project,
 
                         dayjs(`${year}/${month}/${date}`),
                         'overtime',
@@ -374,7 +392,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                       onSelectTimeEntry(
                         value,
                         null,
-                        project.id,
+                        project,
                         dayjs(`${year}/${month}/${date}`),
                         'overtime',
                       )
@@ -391,7 +409,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                       onSelectTimeEntry(
                         value,
                         null,
-                        project.id,
+                        project,
                         dayjs(`${year}/${month}/${date}`),
                         'hours',
                       )
@@ -409,7 +427,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                     onSelectTimeEntry(
                       value,
                       null,
-                      project.id,
+                      project,
                       dayjs(`${year}/${month}/${date}`),
                       'overtime',
                     )
@@ -426,7 +444,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                     onSelectTimeEntry(
                       value,
                       null,
-                      project.id,
+                      project,
                       dayjs(`${year}/${month}/${date}`),
                       'hours',
                     )
@@ -442,7 +460,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     });
     setColumns(columns);
     // console.log(tempTotalWeeks);
-  }, [range, entries]);
+  }, [range, entries, responseTimeEntry, responseProject]);
 
   useEffect(() => {
     // console.log('totalWeeks', totalWeeks);

@@ -35,6 +35,7 @@ import SkeletonTable, {
 import { useSelector } from 'react-redux';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import { useGetEmployeeByCodeQuery } from '@/services';
+import dayjs from 'dayjs';
 export const ProjectManagement = () => {
   const code = useSelector(selectCurrentCode);
   const { data: currentUser } = useGetEmployeeByCodeQuery(code || '');
@@ -60,7 +61,13 @@ export const ProjectManagement = () => {
   const isEditing = (record: Partial<Project>) => record.code === editingKey;
   const edit = (record: Partial<Project>) => {
     console.log({ ...record });
-    form.setFieldsValue({ ...record });
+    console.log(record);
+
+    form.setFieldsValue({
+      ...record,
+      startDate: dayjs(record.startDate),
+      endDate: dayjs(record.endDate),
+    });
     setEditingKey(record.code!);
   };
   const save = async (record: Partial<Project>) => {
@@ -104,7 +111,16 @@ export const ProjectManagement = () => {
   const applyAdd = async (key: string) => {
     try {
       const row = (await form.validateFields()) as Required<Project>;
-      const { name, description, status, type, typeLeave, limit } = row;
+      const {
+        name,
+        description,
+        status,
+        type,
+        typeLeave,
+        limit,
+        startDate,
+        endDate,
+      } = row;
       const projectadd = {
         code: editingKey,
         name,
@@ -113,6 +129,8 @@ export const ProjectManagement = () => {
         type,
         typeLeave,
         limit,
+        startDate: startDate || dayjs(),
+        endDate: endDate || dayjs(),
       };
       const result = await addProject(projectadd);
 
@@ -141,7 +159,7 @@ export const ProjectManagement = () => {
       }
     }
   };
-  const columns: (ColumnType<Partial<Project>> & ColumnExpand & any)[] = [
+  const columns: (ColumnType<Partial<Project>> & ColumnExpand)[] = [
     {
       title: 'Mã dự án',
       dataIndex: 'code',
@@ -155,14 +173,6 @@ export const ProjectManagement = () => {
 
       required: true,
     },
-    // {
-    //   title: 'Mô tả dự án',
-    //   dataIndex: 'description',
-    //   editable: true,
-    //   type: 'string',
-
-    //   required: true,
-    // },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
@@ -176,6 +186,36 @@ export const ProjectManagement = () => {
         StatusProject.ONGOING,
       ],
     },
+    {
+      title: 'Ngày bắt đầu',
+      dataIndex: 'startDate',
+      editable: true,
+      type: 'date',
+
+      required: false,
+
+      hideWhen: (record: Partial<Project>) => record.type === TypeProject.LEAVE,
+      render: (date: string, record: Partial<Project>) => {
+        if (record.type === TypeProject.LEAVE) return '';
+        return dayjs(date).format('DD/MM/YYYY');
+      },
+    },
+
+    {
+      title: 'Ngày kết thúc',
+      dataIndex: 'endDate',
+      editable: true,
+
+      required: false,
+      type: 'date',
+      hideWhen: (record: Partial<Project>) => record.type === TypeProject.LEAVE,
+
+      render: (date: string, record: Partial<Project>) => {
+        if (record.type === TypeProject.LEAVE) return '';
+        return dayjs(date).format('DD/MM/YYYY');
+      },
+    },
+
     {
       title: 'Loại dự án',
       dataIndex: 'type',
@@ -203,7 +243,7 @@ export const ProjectManagement = () => {
       ],
     },
     {
-      title: 'Giới hạn Nghỉ phép',
+      title: 'Giới hạn nghỉ phép (Năm)',
       dataIndex: 'limit',
       editable: true,
       type: 'number',
@@ -316,10 +356,11 @@ export const ProjectManagement = () => {
       onCell: (record: Partial<Project>) => ({
         record,
         title: col.title,
-        dataindex: col.dataIndex,
+        dataIndex: col.dataIndex,
         editing: isEditing(record) ? true : false,
         type: col.type || 'string',
         required: col.required,
+        hideWhen: col.hideWhen,
         values: col?.values || null,
       }),
     };
@@ -328,13 +369,6 @@ export const ProjectManagement = () => {
     <Card title='Bảng Dự Án' className='h-full'>
       <Flex vertical>
         <Flex className='justify-between items-start w-full h-12'>
-          <Search
-            placeholder='input search text'
-            allowClear
-            onSearch={onSearch}
-            className='h-72 w-fit'
-          />
-
           <Flex className='flex-row gap-5'>
             <Button
               onClick={refetchAll}
