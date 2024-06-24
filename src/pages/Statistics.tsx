@@ -28,17 +28,22 @@ export const Statistics = () => {
   const [totalTimeEntry, setTotalTimeEntry] = useState<string>('0');
   const [Leaveday, setLeaveday] = useState<string>('0');
   useEffect(() => {
-    if(projectsemployee?.data){
-    const projects = projectsemployee?.data || [] ;
-    setTotalProject(projects.length.toString());
-    let totalleave = projects.reduce((acc, project) => {acc += project.limit; return acc;}, 0);
-    setLeaveday(totalleave.toString());
-    let totaltime = timeentry?.data?.reduce((acc, time) => {acc += time.hours /*them cai overtime   */  ; return acc;}, 0) || '0';
-    console.log(timeentry?.data);
-    setTotalTimeEntry(totaltime.toString() );
-  }
-  
-  
+    if (projectsemployee?.data) {
+      const projects: any = projectsemployee?.data || [];
+      setTotalProject(projects.length.toString());
+      const totalleave: any = projects.reduce((acc: any, project: any) => {
+        acc += project.limit;
+        return acc;
+      }, 0);
+      setLeaveday(totalleave.toString());
+      const totaltime =
+        timeentry?.data?.reduce((acc, time) => {
+          acc += time.hours /*them cai overtime   */;
+          return acc;
+        }, 0) || '0';
+      console.log(timeentry?.data);
+      setTotalTimeEntry(totaltime.toString());
+    }
   }, [date]);
   const handleChange = (value: string) => {
     setDate(parseInt(value));

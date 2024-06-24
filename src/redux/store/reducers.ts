@@ -1,5 +1,4 @@
-import { employeeApi, authApi, } from '@/services';
-import { projectApi } from '@/services/project';
+import { employeeApi, authApi } from '@/services';
 import { combineReducers } from '@reduxjs/toolkit';
 import auth from '@/redux/features/auth/auth.slice';
 import storage from 'redux-persist/lib/storage';

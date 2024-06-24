@@ -22,7 +22,7 @@ export default function Login() {
   const [api, contextHolder] = notification.useNotification();
   useEffect(() => {
     if (isSuccess) {
-      navigate(config.dashboard.root);
+      navigate(config.system.dashboard.path);
     }
     if (isError) {
       api.warning({

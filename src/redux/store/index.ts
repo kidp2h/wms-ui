@@ -1,5 +1,4 @@
 import { employeeApi } from '@/services/employee';
-import { projectApi } from '@/services/project';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { persistStore } from 'redux-persist';
@@ -20,7 +19,6 @@ export const store = configureStore({
       authApi.middleware,
       projectApi.middleware,
       timeEntryApi.middleware,
-  
     ),
 });
 setupListeners(store.dispatch);

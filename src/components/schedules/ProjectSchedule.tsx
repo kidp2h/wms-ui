@@ -35,7 +35,6 @@ export type PropsType = {
   employeeId: string | null;
   isAdmin: boolean;
 };
-
 export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   const [range, setRange] = useState<RangeType>();
   const [api, contextHolder] = notification.useNotification();
@@ -76,7 +75,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     type: 'overtime' | 'hours' = 'hours',
   ) => {
     setIsChange(true);
-    console.log(date, project.id, timeEntry);
     if (timeEntry) {
       // INFO: update time entry
       const newEntries = entries.map((entry) => {
@@ -110,7 +108,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
           {
             [`${type}`]: Number(value),
             employeeId,
-            projectId: project.id,
+            projectId: project?.id,
             project,
 
             date: date?.toDate(),
@@ -122,7 +120,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
         const index = entries.findIndex((entry) => {
           return (
             dayjs(entry.date).isSame(date, 'day') &&
-            entry.projectId === project.id
+            entry.projectId === project?.id
           );
         });
         if (index === -1) {
@@ -131,7 +129,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
             {
               [`${type}`]: Number(value),
               employeeId,
-              projectId: project.id,
+              projectId: project?.id,
               project,
               date: dayjs.utc(date)?.toDate(),
             } as any,
@@ -151,7 +149,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
               [`${type}`]: Number(value),
               employeeId,
 
-              projectId: project.id,
+              projectId: project?.id,
               project,
               date: dayjs.utc(date)?.toDate(),
             } as any);
