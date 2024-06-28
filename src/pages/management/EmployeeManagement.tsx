@@ -41,8 +41,6 @@ import { useNavigate } from 'react-router-dom';
 const { Search } = Input;
 
 export const EmployeeManagement = () => {
-  const code = useSelector(selectCurrentCode);
-  const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isLoading, refetch } = useGetEmployeesQuery();
 
   const [paginateEmployees, paginatedEmployees] =
