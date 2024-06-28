@@ -125,14 +125,10 @@ export default function MainLayout() {
   return (
     user && (
       <BaseLayout>
-        <Header
-          style={{
-            display: 'flex',
-          }}
-        >
+        <Header>
           <Menu
             theme='dark'
-            className='flex w-full'
+            className='flex w-full h-full'
             mode='horizontal'
             selectable={false}
             items={headerItem}
@@ -145,6 +141,7 @@ export default function MainLayout() {
             style={{
               background: colorBgContainer,
               overflow: 'auto',
+              height: '100vh',
             }}
             breakpoint='xs'
             collapsedWidth='50'

@@ -21,6 +21,8 @@ import { Dashboard } from '@/pages/Dashboard';
 export const RoutesConfig = () => {
   const code = useSelector(selectCurrentCode);
   const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
+  console.log(currentuser);
+  const t = true;
 
   return (
     <Routes>
@@ -43,29 +45,29 @@ export const RoutesConfig = () => {
           key='employee_schedule'
         />
 
-        {currentuser?.data?.role == Role.MANAGER ? (
-          <Route path={config.system.management.root.path}>
-            <>
-              <Route
-                path={config.system.management.project.path}
-                key='project_management'
-                element={<ProjectManagement />}
-              />
-              <Route
-                path={config.system.management.schedule.path}
-                key='schedule_management'
-                element={<ScheduleManagement />}
-              />
-              <Route
-                key='employee_management'
-                path={config.system.management.employee.path}
-                element={<EmployeeManagement />}
-              />
-            </>
-          </Route>
-        ) : (
-          <> </>
-        )}
+        {/* {t == true ? ( */}
+        <Route path={config.system.management.root.path}>
+          <>
+            <Route
+              path={config.system.management.project.path}
+              key='project_management'
+              element={<ProjectManagement />}
+            />
+            <Route
+              path={config.system.management.schedule.path}
+              key='schedule_management'
+              element={<ScheduleManagement />}
+            />
+            <Route
+              key='employee_management'
+              path={config.system.management.employee.path}
+              element={<EmployeeManagement />}
+            />
+          </>
+        </Route>
+        {/* ) : ( */}
+        {/*   <> </> */}
+        {/* )} */}
       </Route>
       <Route path='/auth' Component={AuthLayout}>
         <Route index path='/auth/login' element={<Login />} />

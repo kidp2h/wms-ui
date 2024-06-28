@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { Employee } from 'wms-types';
-import { Response } from '.';
+import { PaginatedResult, PayloadPaginate, Response } from '.';
 import { baseQueryWithReauth } from './api';
 
 export const employeeApi = createApi({
@@ -17,6 +17,17 @@ export const employeeApi = createApi({
     getEmployees: builder.query<Response<Employee[]>, void>({
       query: () => '/employees',
       providesTags: ['Employees'],
+    }),
+    paginateEmployees: builder.mutation<
+      Response<PaginatedResult<Employee>>,
+      PayloadPaginate
+    >({
+      query: (payload: PayloadPaginate) => ({
+        url: `/paginate/employees?page=${payload?.paginate?.page || 1}&limit=${payload?.paginate?.limit || 10}&perPage=${payload?.paginate?.perPage || 10}`,
+        method: 'POST',
+        body: payload?.body || {},
+        providesTags: ['Employees'],
+      }),
     }),
     updateEmployee: builder.mutation<Response<Employee>, Partial<Employee>>({
       query: (body) => ({
@@ -56,4 +67,5 @@ export const {
   useLazyGetEmployeeByIdQuery,
   useRemoveEmployeeMutation,
   useUpdateEmployeeMutation,
+  usePaginateEmployeesMutation,
 } = employeeApi;

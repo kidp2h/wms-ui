@@ -6,7 +6,7 @@ export default function BaseLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Layout>
+    <Layout className='h-full'>
       <Content className='w-full h-full'>{children}</Content>
 
       {/* <Footer */}

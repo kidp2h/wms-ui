@@ -1,5 +1,15 @@
 import { Employee, Role } from 'wms-types';
-import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
+import {
+  Card,
+  Flex,
+  Table,
+  Input,
+  Space,
+  Button,
+  Form,
+  Tooltip,
+  Pagination,
+} from 'antd';
 import { SearchProps } from 'antd/es/input';
 import React, { useEffect, useState } from 'react';
 import {
@@ -17,6 +27,7 @@ import {
   useAddEmployeeMutation,
   useGetEmployeeByCodeQuery,
   useGetEmployeesQuery,
+  usePaginateEmployeesMutation,
   useRemoveEmployeeMutation,
   useUpdateEmployeeMutation,
 } from '@/services';
@@ -33,6 +44,9 @@ export const EmployeeManagement = () => {
   const code = useSelector(selectCurrentCode);
   const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
   const { data: response, isLoading, refetch } = useGetEmployeesQuery();
+
+  const [paginateEmployees, paginatedEmployees] =
+    usePaginateEmployeesMutation();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
   const [updateEmployee, employeeUpdated] = useUpdateEmployeeMutation();
   const [addEmployee, employeeAdded] = useAddEmployeeMutation();
@@ -40,14 +54,18 @@ export const EmployeeManagement = () => {
   const [creatingKey, setCreatingKey] = useState<string>('');
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
 
   const isEditing = (record: Partial<Employee>) => record.code === editingKey;
   const edit = (record: Partial<Employee>) => {
-    console.log({ ...record });
-
     form.setFieldsValue({ ...record, password: '' });
     setEditingKey(record.code!);
   };
+
+  useEffect(() => {
+    paginateEmployees({ body: {}, paginate: { page, perPage } });
+  }, [page, perPage]);
 
   const save = async (record: Partial<Employee>) => {
     setEditingKey('');
@@ -56,10 +74,13 @@ export const EmployeeManagement = () => {
     updateEmployee({ ...record, ...row });
   };
   useEffect(() => {
-    if (response != undefined && response.data) {
-      setEmployees([...response?.data!]);
+    if (
+      paginatedEmployees != undefined &&
+      paginatedEmployees.data?.data?.result
+    ) {
+      setEmployees([...paginatedEmployees?.data?.data?.result!]);
     }
-  }, [response]);
+  }, [paginatedEmployees]);
 
   const cancel = () => {
     setEditingKey('');
@@ -110,15 +131,13 @@ export const EmployeeManagement = () => {
       setCreatingKey('');
       setEditingKey('');
     } catch (error) {
-      console.log(error);
+      //
     }
   };
 
   const refetchAll = () => {
     refetch();
   };
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) =>
-    console.log(info?.source, value);
   const columns: (ColumnType<Partial<Employee>> & ColumnExpand)[] = [
     {
       title: 'Mã nhân viên',
@@ -167,8 +186,6 @@ export const EmployeeManagement = () => {
       key: 'action',
       required: false,
       render: (_: any, record: Partial<Employee>) => {
-        // console.log(record);
-
         const editable = isEditing(record);
         if (record?.id === undefined) {
           return (
@@ -262,7 +279,6 @@ export const EmployeeManagement = () => {
     if (!col.editable) {
       return col;
     }
-    console.log(col);
 
     return {
       ...col,
@@ -277,7 +293,15 @@ export const EmployeeManagement = () => {
       }),
     };
   });
-  console.log(mappedColumn);
+
+  const onChangePage = (page: number) => {
+    console.log(setPage(page));
+  };
+
+  const onPerPageChange = (current: number, size: number) => {
+    setPage(current);
+    setPerPage(size);
+  };
 
   // const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   // const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -315,21 +339,31 @@ export const EmployeeManagement = () => {
         </Flex>
         <div className='w-full h-full'>
           <SkeletonTable
-            loading={isLoading}
+            loading={paginatedEmployees.isLoading}
             columns={mappedColumn as SkeletonTableColumnsType[]}
           >
             <Form form={form} component={false}>
               <Table
                 className='h-full w-full'
                 rowKey={'code'}
+                pagination={false}
                 columns={mappedColumn}
                 dataSource={employees}
-                pagination={false}
                 components={{
                   body: {
                     cell: EditableCell,
                   },
                 }}
+              />
+
+              <Pagination
+                onShowSizeChange={onPerPageChange}
+                defaultCurrent={page}
+                className='mt-5 w-full flex justify-end'
+                onChange={onChangePage}
+                defaultPageSize={perPage}
+                showSizeChanger
+                total={paginatedEmployees.data?.data?.meta?.total || 0}
               />
             </Form>
           </SkeletonTable>
