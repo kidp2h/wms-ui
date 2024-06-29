@@ -46,7 +46,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   const [updateTimeEntryEmployee, { isSuccess, isError, data, error }] =
     useUpdateTimeEntryEmployeeMutation();
   const { data: responseTimeEntry, refetch: timeEntryRefetch } =
-    useGetTimeEntryEmployeeQuery({});
+    useGetTimeEntryEmployeeQuery();
   const [entries, setEntries] = useState<Partial<TimeEntryProject>[]>([]);
   const options: SelectProps['options'] = [
     { value: '0' },

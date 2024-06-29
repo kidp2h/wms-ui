@@ -169,6 +169,7 @@ export const ManagerStatistics = () => {
         x.data = data
       })
       chartareas.series.push(...seriesTotal.map(x=> filterProperties(x,['name','data'])) as never[])
+      console.log(chartareas.series)
       //prject
       chartbarProject.options.xaxis.categories = seriesTotal.map(x=>x.name) as never[]
       const seriesCharBarProject =[{

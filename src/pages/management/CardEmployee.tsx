@@ -4,17 +4,18 @@ import {
   useGetProjectByEmployeeQuery,
   useGetProjectsQuery,
   useGetTimeEntryEmployeeQuery,
+  useGetTimeEntrysQuery,
 } from '@/services';
 import { Card, Flex, Select, SelectProps } from 'antd';
 import { set } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { TypeProject } from 'wms-types';
 const Daynow = new Date();  
 
 export const CardEmployee = () => {
   const [date, setDate] = useState<number>(Daynow.getFullYear());
-  const { data: timeentry } = useGetTimeEntryEmployeeQuery({employeeId:undefined,type: 'PROJECT'});
-  const { data: timeleave } = useGetTimeEntryEmployeeQuery({employeeId:undefined,type: 'LEAVE'});
+  const { data: timeentry } = useGetTimeEntryEmployeeQuery();
   const { data: projectsemployee } = useGetProjectByEmployeeQuery({
     year: date,type: 'PROJECT',
   });
@@ -32,8 +33,8 @@ export const CardEmployee = () => {
         acc += time.limit;
         return acc;
       }, 0);
-      const totalleaveUsed: number = timeleave?.data?.reduce((acc: any, time: any) => {
-        if( new Date(time.date.toString()).getFullYear() === date)
+      const totalleaveUsed: number = timeentry?.data?.reduce((acc: any, time: any) => {
+        if(time.project.type == TypeProject.LEAVE   &&  new Date(time.date.toString()).getFullYear() === date)
         acc += time.hours;
         return acc;
       }, 0);
@@ -44,13 +45,13 @@ export const CardEmployee = () => {
      console.log(timeentry?.data)
       const totaltime =
         timeentry?.data?.reduce((acc, time) => {
-          if( new Date(time.date.toString()).getFullYear() === date)
+          if(time.project.type == TypeProject.PROJECT  && new Date(time.date.toString()).getFullYear() === date)
           acc += time.hours 
           return acc;
         }, 0) || '0';
       setTotalTimeEntry(totaltime.toString());
     }
-  }, [projectsemployee,ProjectLeaveDay,timeentry,timeleave]);
+  }, [projectsemployee,ProjectLeaveDay,timeentry]);
 
 
 

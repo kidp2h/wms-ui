@@ -157,8 +157,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.11(@types/node@20.12.12)
       wms-types:
-        specifier: ^0.0.11
-        version: 0.0.11(@prisma/client@5.15.1(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4)
+        specifier: ^0.0.14
+        version: 0.0.14(@prisma/client@5.15.1(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4)
 
 packages:
 
@@ -3530,8 +3530,8 @@ packages:
     engines: {node: '>= 8'}
     hasBin: true
 
-  wms-types@0.0.11:
-    resolution: {integrity: sha512-OA48V+P274RJIoy0is5Ly17QNsp/schuLe3dhKG722nl/0eXJC/7AAsazaIjLiN9GrRiTa6JVItTYxleLoXivQ==}
+  wms-types@0.0.14:
+    resolution: {integrity: sha512-yZHU6G6G5a0o03fbLfQ3mKCBSMhyiWjaAa82WaArCJoQ8sPvlAw8OXOinvoVJaxOhB42P2g4vcFlP16Dr4Lswg==}
     peerDependencies:
       '@prisma/client': '*'
       prisma-class-generator: '*'
@@ -7404,7 +7404,7 @@ snapshots:
     dependencies:
       isexe: 2.0.0
 
-  wms-types@0.0.11(@prisma/client@5.15.1(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4):
+  wms-types@0.0.14(@prisma/client@5.15.1(prisma@5.15.0))(prisma-class-generator@0.2.9(prisma@5.15.0))(prisma-generator-nestjs-dto@1.1.4):
     dependencies:
       '@prisma/client': 5.15.1(prisma@5.15.0)
       prisma-class-generator: 0.2.9(prisma@5.15.0)

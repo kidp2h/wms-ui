@@ -16,13 +16,10 @@ export const timeEntryApi = createApi({
 
     getTimeEntryEmployee: builder.query<
       Response<TimeEntryProject[]>,
-      {  employeeId?: string ,type?: string}
+      string | undefined
     >({
-      query: ({employeeId,type}) => {
-        console.log(type)
-        if(type){
-          return `/employee/time-entries/{id}?type=${type}`;
-        }
+      query: (employeeId) => {
+        
         if (employeeId) {
           // INFO: get employee's time entries by employeeId
           return `/employee/time-entries/${employeeId}`;
