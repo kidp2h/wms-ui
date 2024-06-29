@@ -1,26 +1,14 @@
-import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
-import {
-    useGetEmployeeByCodeQuery,
-    useGetProjectByEmployeeQuery,
-    useGetTimeEntryEmployeeQuery,
-} from '@/services';
+
 import { Card, Flex, Select, SelectProps } from 'antd';
 import { set } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChartStatistic } from '../../components/shared/Chart';
+import { CardManager } from './CardManager';
+import { useGetProjectsQuery, useGetTimeEntrysQuery } from '@/services';
 let chartareas={
           
-    series: [{
-      name: 'Cybersoft',
-      data: [5, 5, 10, 8, 7, 5, 4, null, null, null, 10, 10]
-    }, {
-      name: 'Project 1',
-      data: [10, 15, null, 12, null, 10, 12, 15, null, null, 12, null,]
-    }, {
-      name: 'Project 2',
-      data: [null, null, null, null, 3, 4, 1, 3, 4,  6,  7,  9,]
-    }],
+    series: [],
     options: {
       chart: {
         height: 350,
@@ -45,10 +33,7 @@ let chartareas={
   
   };
 let chartbarProject= {     
-    series: [{
-        name: 'Giờ công',
-      data: [21, 22, 10, 28, 16, 21, 13, 30]
-    }],
+    series: [],
     options: {
       chart: {
         height: 350,
@@ -69,7 +54,7 @@ let chartbarProject= {
         show: false
       },
       xaxis: {
-        categories: ["Cybersoft", "Project 1", "Project 2", "Project 3", "Project 4", "Project 5", "Project 6", "Project 7"],
+        categories: [],
         labels: {
           style: {
             //colors: colors,
@@ -80,10 +65,13 @@ let chartbarProject= {
     },
 };
 let chartbarEmployee= {     
-    series: [{
+    series: [
+      {
         name: 'Số lượng',
-      data: [2, 3,4, 3, 2, 3, 4, 5]
-    }],
+        data: []
+      }
+
+    ],
     options: {
       chart: {
         height: 350,
@@ -104,73 +92,119 @@ let chartbarEmployee= {
         show: false
       },
       xaxis: {
-        categories: ["Cybersoft", "Project 1", "Project 2", "Project 3", "Project 4", "Project 5", "Project 6", "Project 7"],
+        categories: [],
         labels: {
           style: {
             //colors: colors,
             fontSize: '12px'
           }
         }
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value:number) {
+            return Math.round(value); // Làm tròn giá trị đến số nguyên gần nhất
+          }
+        },
+        max: function(max:number) {
+          return Math.max(...chartbarEmployee.series[0].data) + 5; // Tính max và cộng thêm 5 đơn vị
+      }
       }
     },
+    
 };
-export const ManagerStatistics = () => {
+function filterProperties(obj:any, keysToKeep:any[]) {
+  const filteredObj: any = {}; 
+  keysToKeep.forEach(key => {
+    if (obj.hasOwnProperty(key)) {
+      filteredObj[key] = obj[key];
+    }
+  });
+  return filteredObj;
+}
 
+
+export const ManagerStatistics = () => {
+  const [stateTotal, setStateTotal] = useState(chartareas);
+  const [stateProject, setStateProject] = useState(chartbarProject);
+  const [stateEmployee, setStateEmployee] = useState(chartbarEmployee);
+  const {data:response,refetch:refetchProjects } = useGetProjectsQuery()
+  const {data:responseTimeEntry,refetch} = useGetTimeEntrysQuery()
+  useEffect(()=>{
+    refetch()
+    refetchProjects()
+    if(response?.data){
+      let seriesTotal:any[] = []
+      //data tong
+      response?.data.forEach(x => {
+        if(x.type == 'PROJECT'){
+         const data ={
+            id:x.id,
+            name:x.name,
+            data:[],
+            employee:[],
+            startAt:x.startDate,
+            endAt:x.endDate
+         }
+         seriesTotal.push(data)
+        }
+      });
+      seriesTotal.forEach(x=>{
+        let data:any[] = []
+        for (let i = 1; i <= 12; i++) {
+          let total = 0
+          responseTimeEntry?.data?.forEach(y=>{
+            if(y.projectId == x.id && new Date(y.date.toString()).getMonth()+1 == i){
+              total += y.hours
+            }
+             if(!x.employee.includes(y.employeeId)){
+              x.employee.push(y.employeeId)
+             }
+          })
+          if(total == 0){
+            data.push(null)
+          }else
+          data.push(total)
+        }
+        x.data = data
+      })
+      chartareas.series.push(...seriesTotal.map(x=> filterProperties(x,['name','data'])) as never[])
+      //prject
+      chartbarProject.options.xaxis.categories = seriesTotal.map(x=>x.name) as never[]
+      const seriesCharBarProject =[{
+        name:'Giờ công',
+        data:seriesTotal.map(x=>x.data.reduce((a:any,b:any)=>a+b,0))
+      }]
+      chartbarProject.series = seriesCharBarProject as never[]
+      //employee
+      chartbarEmployee.options.xaxis.categories = seriesTotal.map(x=>x.name) as never[]
+
+      const seriesCharBarEmployee =[{
+        name:'Số lượng',
+        data:seriesTotal.map(x=>x.employee.length)
+      }]
+      chartbarEmployee.series = seriesCharBarEmployee as never[]
+      setStateEmployee(chartbarEmployee)
+      setStateProject(chartbarProject)
+      setStateTotal(chartareas)
+    }
+
+
+  },[response,responseTimeEntry])
     return (<>
-        <Flex justify={'flex-start'} align={'center'} style={{ gap: '16px' }}>
-            <Card
-                title='Tổng Dự án hiện tại'
-                bordered={false}
-                style={{ width: '23%' }}
-            >
-                <Flex justify={'center'} align={'center'} className='w-full h-20'>
-                    <span className='text-4xl'>0</span>
-                    <span className='ml-1 mt-4'> /dự án</span>
-                </Flex>
-            </Card>
-            <Card
-                title='Tổng giờ công '
-                bordered={false}
-                style={{ width: '23%' }}
-            >
-                <Flex justify={'center'} align={'center'} className='w-full h-20'>
-                    <span className='text-4xl'>0</span>
-                    <span className='ml-1 mt-4'> /h</span>
-                </Flex>
-            </Card>
-            <Card
-                title='Tổng Nhân viên tham gia'
-                bordered={false}
-                style={{ width: '23%' }}
-            >
-                <Flex justify={'center'} align={'center'} className='w-full h-20'>
-                    <span className='text-4xl'>0</span>
-                    <span className='ml-1 mt-4'> /người</span>
-                </Flex>
-            </Card>
-            <Card
-                title='Tổng ngày nghỉ sử dụng'
-                bordered={false}
-                style={{ width: '23%' }}
-            >
-                <Flex justify={'center'} align={'center'} className='w-full h-20'>
-                    <span className='text-4xl'>0</span>
-                    <span className='ml-1 mt-4'> /ngày</span>
-                </Flex>
-            </Card>
-        </Flex>
+       <CardManager></CardManager>
         <Card className='w-full mt-5 '  >
         <h1>Tổng giờ công của dự án trong năm </h1>
-            <ChartStatistic typeChart="line" data={chartareas}   ></ChartStatistic>
+            <ChartStatistic typeChart="line" data={stateTotal}   ></ChartStatistic>
         </Card>
         <Flex justify={'start'} align={'center'} className='w-full gap-2'>
             <Card className='w-[50%] mt-5 '  >
                 <h1>Tổng giờ công của từng dự án</h1>
-                <ChartStatistic typeChart="bar" data={chartbarProject}   ></ChartStatistic>
+                <ChartStatistic typeChart="bar" data={stateProject}   ></ChartStatistic>
             </Card>
             <Card className='w-[50%] mt-5 '  >
             <h1>Tổng nhân viên tham gia của từng dự án</h1>
-            <ChartStatistic typeChart="bar" data={chartbarEmployee}   ></ChartStatistic>
+            <ChartStatistic typeChart="bar" data={stateEmployee}   ></ChartStatistic>
             </Card>
         </Flex>
     </>)

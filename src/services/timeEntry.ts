@@ -8,17 +8,27 @@ export const timeEntryApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['TimeEntry'],
   endpoints: (builder) => ({
+    getTimeEntrys: builder.query<Response<TimeEntryProject[]>, void>({
+      query: () => '/time-entries',
+      providesTags: ['TimeEntry'],
+    }),
+
+
     getTimeEntryEmployee: builder.query<
       Response<TimeEntryProject[]>,
-      string | null
+      {  employeeId?: string ,type?: string}
     >({
-      query: (employeeId) => {
+      query: ({employeeId,type}) => {
+        console.log(type)
+        if(type){
+          return `/employee/time-entries/{id}?type=${type}`;
+        }
         if (employeeId) {
           // INFO: get employee's time entries by employeeId
           return `/employee/time-entries/${employeeId}`;
         } else {
           // INFO: get self employee's by token
-          return `/employee/time-entries`;
+          return `/employee/time-entries/{id}`;
         }
       },
       providesTags: ['TimeEntry'],
@@ -39,6 +49,7 @@ export const timeEntryApi = createApi({
 });
 
 export const {
+  useGetTimeEntrysQuery,
   useGetTimeEntryEmployeeQuery,
   useUpdateTimeEntryEmployeeMutation,
 } = timeEntryApi;
