@@ -122,7 +122,7 @@ function filterProperties(obj:any, keysToKeep:any[]) {
   });
   return filteredObj;
 }
-
+let seriesTotal:any[]
 
 export const ManagerStatistics = () => {
   const [stateTotal, setStateTotal] = useState(chartareas);
@@ -131,31 +131,25 @@ export const ManagerStatistics = () => {
   const {data:response,refetch:refetchProjects } = useGetProjectsQuery()
   const {data:responseTimeEntry,refetch} = useGetTimeEntrysQuery()
   useEffect(()=>{
-    refetch()
-    refetchProjects()
+    
     if(response?.data){
-      let seriesTotal:any[] = []
-      //data tong
-      response?.data.forEach(x => {
-        if(x.type == 'PROJECT'){
-         const data ={
-            id:x.id,
-            name:x.name,
-            data:[],
-            employee:[],
-            startAt:x.startDate,
-            endAt:x.endDate
-         }
-         seriesTotal.push(data)
-        }
-      });
+     seriesTotal = response?.data
+     .filter(x => x.type === 'PROJECT')
+     .map(x => ({
+       id: x.id,
+       name: x.name,
+       data: [],
+       employee: [],
+       startAt: x.startDate,
+       endAt: x.endDate
+     }));
       seriesTotal.forEach(x=>{
         let data:any[] = []
         for (let i = 1; i <= 12; i++) {
           let total = 0
           responseTimeEntry?.data?.forEach(y=>{
             if(y.projectId == x.id && new Date(y.date.toString()).getMonth()+1 == i){
-              total += y.hours
+              total += y.hours +y.overtime
             }
              if(!x.employee.includes(y.employeeId)){
               x.employee.push(y.employeeId)
@@ -188,23 +182,25 @@ export const ManagerStatistics = () => {
       setStateEmployee(chartbarEmployee)
       setStateProject(chartbarProject)
       setStateTotal(chartareas)
+     
     }
 
-
+    refetch()
+    refetchProjects()
   },[response,responseTimeEntry])
     return (<>
        <CardManager></CardManager>
         <Card className='w-full mt-5 '  >
-        <h1>Tổng giờ công của dự án trong năm </h1>
+        <h1 className='text-base font-bold	 ' >Tổng giờ công của dự án trong năm </h1>
             <ChartStatistic typeChart="line" data={stateTotal}   ></ChartStatistic>
         </Card>
         <Flex justify={'start'} align={'center'} className='w-full gap-2'>
             <Card className='w-[50%] mt-5 '  >
-                <h1>Tổng giờ công của từng dự án</h1>
+                <h1 className='text-base font-bold	 '>Tổng giờ công của từng dự án</h1>
                 <ChartStatistic typeChart="bar" data={stateProject}   ></ChartStatistic>
             </Card>
             <Card className='w-[50%] mt-5 '  >
-            <h1>Tổng nhân viên tham gia của từng dự án</h1>
+            <h1 className='text-base font-bold	 '>Tổng nhân viên tham gia của từng dự án</h1>
             <ChartStatistic typeChart="bar" data={stateEmployee}   ></ChartStatistic>
             </Card>
         </Flex>

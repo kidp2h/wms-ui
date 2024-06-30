@@ -8,11 +8,13 @@ export const employeeApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Employees'],
   endpoints: (builder) => ({
-    getEmployeeById: builder.query<Response<Employee>, string>({
-      query: (id) => `/employee/${id}`,
+    getEmployeeById: builder.query<Response<Employee>, string |undefined>({
+      query: (id) =>{
+        if(id)
+       return  `/employee/${id}`; else return '/employee'}
     }),
-    getEmployeeByCode: builder.query<Response<Employee>, string>({
-      query: (code) => `/employee?code=${code}`,
+    getEmployee: builder.query<Response<Employee>, void>({
+      query: () => `/employee/role`,
     }),
     getEmployees: builder.query<Response<Employee[]>, void>({
       query: () => '/employees',
@@ -61,7 +63,7 @@ export const employeeApi = createApi({
 
 export const {
   useGetEmployeeByIdQuery,
-  useGetEmployeeByCodeQuery,
+  useGetEmployeeQuery,
   useAddEmployeeMutation,
   useGetEmployeesQuery,
   useLazyGetEmployeeByIdQuery,
