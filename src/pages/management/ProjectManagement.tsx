@@ -34,11 +34,9 @@ import SkeletonTable, {
 } from '@/components/shared/TableSkeleton';
 import { useSelector } from 'react-redux';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
-import { useGetEmployeeByCodeQuery } from '@/services';
 import dayjs from 'dayjs';
 export const ProjectManagement = () => {
   const code = useSelector(selectCurrentCode);
-  const { data: currentUser } = useGetEmployeeByCodeQuery(code || '');
   const {
     data: response,
     isError,

@@ -12,16 +12,14 @@ import {
 } from '@/pages';
 import { useSelector } from 'react-redux';
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
-import { useGetEmployeeByCodeQuery } from '@/services';
 import { Role } from 'wms-types';
 import { ScheduleManagement } from '@/pages/management/ScheduleManagement';
 import { EmployeeSchedule } from '@/pages/EmployeeSchedule';
 import { Dashboard } from '@/pages/Dashboard';
+import { useGetEmployeeQuery } from '@/services';
 
 export const RoutesConfig = () => {
-  const code = useSelector(selectCurrentCode);
-  const { data: currentuser } = useGetEmployeeByCodeQuery(code || '');
-  console.log(currentuser);
+  const { data: currentuser } = useGetEmployeeQuery();
   const t = true;
 
   return (

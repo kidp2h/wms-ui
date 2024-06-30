@@ -1,6 +1,8 @@
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import {
-  useGetEmployeeByCodeQuery,
+  
+  useGetEmployeeByIdQuery,
+  useGetEmployeeQuery,
   useGetProjectByEmployeeQuery,
   useGetTimeEntryEmployeeQuery,
 } from '@/services';
@@ -15,9 +17,9 @@ import { Role } from 'wms-types';
 
 
 export const Statistics = () => {
-  const code = useSelector(selectCurrentCode);
-  const { data: response, isLoading } = useGetEmployeeByCodeQuery(code || '');
-  useEffect(() => {}, [response]);
+  const { data: response, isLoading } = useGetEmployeeQuery();
+  useEffect(() => {
+  }, [response]);
   return (
     <>
     {response?.data?.role === Role.MANAGER ?  <ManagerStatistics></ManagerStatistics> :<EmployeeStatistics></EmployeeStatistics> }

@@ -1,6 +1,5 @@
 import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import {
-  useGetEmployeeByCodeQuery,
   useGetProjectByEmployeeQuery,
   useGetProjectsQuery,
   useGetTimeEntryEmployeeQuery,
@@ -16,9 +15,7 @@ const Daynow = new Date();
 export const CardEmployee = () => {
   const [date, setDate] = useState<number>(Daynow.getFullYear());
   const { data: timeentry } = useGetTimeEntryEmployeeQuery();
-  const { data: projectsemployee } = useGetProjectByEmployeeQuery({
-    year: date,type: 'PROJECT',
-  });
+  const { data: projectsemployee } = useGetProjectByEmployeeQuery(date);
   const { data: ProjectLeaveDay } = useGetProjectsQuery();
   const [totalProject, setTotalProject] = useState<string>('0');
   const [totalTimeEntry, setTotalTimeEntry] = useState<string>('0');
@@ -26,7 +23,7 @@ export const CardEmployee = () => {
   const [LeaveDayused, setLeaveDayused] = useState<string>('0');
   useEffect(() => {
     if (projectsemployee?.data) {
-      const projects: any = projectsemployee?.data || [];
+      let projects: any[] = projectsemployee?.data?.filter((x: { type: string; })=>x.type == TypeProject.PROJECT) || [];
       setTotalProject(projects.length.toString());
       if(ProjectLeaveDay?.data){
       const totalleave: any = ProjectLeaveDay?.data?.reduce((acc: any, time: any) => {
@@ -46,7 +43,7 @@ export const CardEmployee = () => {
       const totaltime =
         timeentry?.data?.reduce((acc, time) => {
           if(time.project.type == TypeProject.PROJECT  && new Date(time.date.toString()).getFullYear() === date)
-          acc += time.hours 
+          acc += time.hours +time.overtime
           return acc;
         }, 0) || '0';
       setTotalTimeEntry(totaltime.toString());

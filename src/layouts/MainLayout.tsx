@@ -19,16 +19,14 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { config } from '@/routes';
-import { useGetEmployeeByCodeQuery } from '@/services';
+import { useGetEmployeeQuery } from '@/services';
 import { Role } from 'wms-types';
 
 const { Header, Sider, Content } = Layout;
 
 export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
-  const code = useSelector(selectCurrentCode);
-  const [currentcode, setcurrentcode] = useState<string>('');
-  const { data: response, isLoading } = useGetEmployeeByCodeQuery(code || '');
+  const { data: response, isLoading } = useGetEmployeeQuery();
 
   const [collapsed, setCollapsed] = useState(false);
   const {
