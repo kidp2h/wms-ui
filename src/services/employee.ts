@@ -41,7 +41,9 @@ export const employeeApi = createApi({
     }),
     addEmployee: builder.mutation<
       Response<Employee>,
-      Pick<Employee, 'code' | 'role' | 'email' | 'password' | 'fullname'>
+      Pick<Employee, 'code' | 'role' | 'email' | 'fullname'> & {
+        password: string;
+      }
     >({
       query: (body) => ({
         url: `/employee`,

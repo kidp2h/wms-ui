@@ -10,8 +10,7 @@ import {
   Tooltip,
   Pagination,
 } from 'antd';
-import { SearchProps } from 'antd/es/input';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CheckOutlined,
   DeleteOutlined,
@@ -25,7 +24,6 @@ import { ColumnExpand, EditableCell } from '@/components/shared/EditableCell';
 import { ColumnType } from 'antd/es/table';
 import {
   useAddEmployeeMutation,
-  useGetEmployeeByCodeQuery,
   useGetEmployeesQuery,
   usePaginateEmployeesMutation,
   useRemoveEmployeeMutation,
@@ -35,14 +33,8 @@ import SkeletonTable, {
   SkeletonTableColumnsType,
 } from '@/components/shared/TableSkeleton';
 import { random } from 'lodash';
-import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-const { Search } = Input;
 
 export const EmployeeManagement = () => {
-  const { data: response, isLoading, refetch } = useGetEmployeesQuery();
-
   const [paginateEmployees, paginatedEmployees] =
     usePaginateEmployeesMutation();
   const [removeEmployee, employeeRemoved] = useRemoveEmployeeMutation();
@@ -107,7 +99,9 @@ export const EmployeeManagement = () => {
 
   const applyAdd = async (key: string) => {
     try {
-      const row = (await form.validateFields()) as Required<Employee>;
+      const row = (await form.validateFields()) as Required<Employee> & {
+        password: string;
+      };
       const { role, fullname, password, email } = row;
       const employee = {
         code: editingKey,
@@ -133,9 +127,6 @@ export const EmployeeManagement = () => {
     }
   };
 
-  const refetchAll = () => {
-    refetch();
-  };
   const columns: (ColumnType<Partial<Employee>> & ColumnExpand)[] = [
     {
       title: 'Mã nhân viên',
@@ -293,7 +284,7 @@ export const EmployeeManagement = () => {
   });
 
   const onChangePage = (page: number) => {
-    console.log(setPage(page));
+    setPage(page);
   };
 
   const onPerPageChange = (current: number, size: number) => {
@@ -315,7 +306,6 @@ export const EmployeeManagement = () => {
         <Flex className='justify-between items-start w-full h-12'>
           <Flex className='flex-row gap-5'>
             <Button
-              onClick={refetchAll}
               disabled={creatingKey != ''}
               type='primary'
               shape='round'

@@ -28,7 +28,6 @@ export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
   const { data: response, isLoading } = useGetEmployeeQuery();
 
-  const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -123,7 +122,7 @@ export default function MainLayout() {
   return (
     user && (
       <BaseLayout>
-        <Header>
+        <Header className='fixed top-0 left-0 z-10 w-full'>
           <Menu
             theme='dark'
             className='flex w-full h-full'
@@ -135,11 +134,13 @@ export default function MainLayout() {
         </Header>
         <Layout>
           <Sider
+            className='fixed top-16 left-0 z-10'
             width={200}
             style={{
               background: colorBgContainer,
               overflow: 'auto',
               height: '100vh',
+              position: 'fixed',
             }}
             breakpoint='xs'
             collapsedWidth='50'
@@ -151,7 +152,10 @@ export default function MainLayout() {
               items={siderItems}
             />
           </Sider>
-          <Layout className='p-6'>
+          <Layout
+            className='p-6'
+            style={{ marginLeft: '12rem', marginTop: '3rem' }}
+          >
             <Content>
               <Outlet />
             </Content>

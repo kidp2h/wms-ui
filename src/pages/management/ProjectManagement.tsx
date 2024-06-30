@@ -4,18 +4,21 @@ import {
   useRemoveProjectMutation,
   useUpdateProjectMutation,
   useSearchProjectQuery,
-} from '@/services/project';
-import { Card, Flex, Table, Input, Space, Button, Form, Tooltip } from 'antd';
+  usePaginateProjectsMutation,
+} from '@/services';
+import {
+  Card,
+  Flex,
+  Table,
+  Space,
+  Button,
+  Form,
+  Tooltip,
+  Pagination,
+} from 'antd';
 import { random } from 'lodash';
 import { useEffect, useState } from 'react';
-import {
-  Project,
-  StatusProject,
-  TypeProject,
-  TypeLeave,
-  Role,
-} from 'wms-types';
-const { Search } = Input;
+import { Project, StatusProject, TypeProject, TypeLeave } from 'wms-types';
 import { SearchProps } from 'antd/es/input';
 import { ColumnType } from 'antd/es/table';
 import { ColumnExpand, EditableCell } from '@/components/shared/EditableCell';
@@ -37,6 +40,11 @@ import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import dayjs from 'dayjs';
 export const ProjectManagement = () => {
   const code = useSelector(selectCurrentCode);
+
+  const [paginateProjects, paginatedProjects] = usePaginateProjectsMutation();
+
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
   const {
     data: response,
     isError,
@@ -363,6 +371,14 @@ export const ProjectManagement = () => {
       }),
     };
   });
+
+  const onChangePage = (page: number) => {
+    setPage(page);
+  };
+  const onPerPageChange = (current: number, size: number) => {
+    setPage(current);
+    setPerPage(size);
+  };
   return (
     <Card title='Bảng Dự Án' className='h-full'>
       <Flex vertical>
@@ -406,6 +422,16 @@ export const ProjectManagement = () => {
                     cell: EditableCell,
                   },
                 }}
+              />
+
+              <Pagination
+                onShowSizeChange={onPerPageChange}
+                defaultCurrent={page}
+                className='mt-5 w-full flex justify-end'
+                onChange={onChangePage}
+                defaultPageSize={perPage}
+                showSizeChanger
+                total={paginatedProjects.data?.data?.meta?.total || 0}
               />
             </Form>
           </SkeletonTable>
