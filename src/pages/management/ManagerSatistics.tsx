@@ -149,7 +149,7 @@ export const ManagerStatistics = () => {
           let total = 0
           responseTimeEntry?.data?.forEach(y=>{
             if(y.projectId == x.id && new Date(y.date.toString()).getMonth()+1 == i){
-              total += y.hours
+              total += y.hours +y.overtime
             }
              if(!x.employee.includes(y.employeeId)){
               x.employee.push(y.employeeId)
