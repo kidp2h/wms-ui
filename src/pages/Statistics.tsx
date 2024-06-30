@@ -20,7 +20,7 @@ export const Statistics = () => {
   useEffect(() => {}, [response]);
   return (
     <>
-    {response?.data?.role === Role.EMPLOYEE ? <EmployeeStatistics></EmployeeStatistics> : <ManagerStatistics></ManagerStatistics>}
+    {response?.data?.role === Role.MANAGER ?  <ManagerStatistics></ManagerStatistics> :<EmployeeStatistics></EmployeeStatistics> }
       
     </>
   );

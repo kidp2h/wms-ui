@@ -9,6 +9,7 @@ import { set } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChartStatistic } from '../../components/shared/Chart';
+import { CardEmployee } from './CardEmployee';
 
 let state = {
 
@@ -146,92 +147,23 @@ function getDaysArray(year: number, month: number) {
 
 
 const options: SelectProps['options'] = [{ value:'1' ,label: "CyberSoft" }, { value:'2',label: 'Project 1' }];
-const Daynow = new Date();  
 
 export const EmployeeStatistics = () => {
-    
-  const [date, setDate] = useState<number>(Daynow.getFullYear());
-  const { data: timeentry } = useGetTimeEntryEmployeeQuery(null);
-  const { data: projectsemployee } = useGetProjectByEmployeeQuery({
-    year: date,
-  });
-
-  const [totalProject, setTotalProject] = useState<string>('0');
-  const [totalTimeEntry, setTotalTimeEntry] = useState<string>('0');
-  const [Leaveday, setLeaveday] = useState<string>('0');
   const [Flag,setFlag] = useState<boolean>(true);
 
-  useEffect(() => {
-    if (projectsemployee?.data) {
-      const projects: any = projectsemployee?.data || [];
-      setTotalProject(projects.length.toString());
-      const totalleave: any = projects.reduce((acc: any, project: any) => {
-        acc += project.limit;
-        return acc;
-      }, 0);
-      setLeaveday(totalleave.toString());
-      const totaltime =
-        timeentry?.data?.reduce((acc, time) => {
-          acc += time.hours /*them cai overtime   */;
-          return acc;
-        }, 0) || '0';
-      console.log(timeentry?.data);
-      setTotalTimeEntry(totaltime.toString());
-    }
-  }, [date]);
+ 
+
+  
   const handleChange = (value: string) => {
-    setDate(parseInt(value));
-    console.log(date);
+  
   };
   const ChangeDay = (value: boolean) => {
-    setFlag(value)
+    setFlag(value);
   };
   return (
     <>
-     
+    <CardEmployee></CardEmployee>
 
-      <Flex justify={'flex-start'} align={'center'} style={{ gap: '16px' }}>
-        <Card
-          title='Tổng Dự án tham gia'
-          bordered={false}
-          style={{ width: '23%' }}
-        >
-          <Flex justify={'center'} align={'center'} className='w-full h-20'>
-            <span className='text-4xl'>{totalProject}</span>
-            <span className='ml-1 mt-4'> /dự án</span>
-          </Flex>
-        </Card>
-        <Card
-          title='Tổng giờ công tham gia'
-          bordered={false}
-          style={{ width: '23%' }}
-        >
-          <Flex justify={'center'} align={'center'} className='w-full h-20'>
-            <span className='text-4xl'>{totalTimeEntry}</span>
-            <span className='ml-1 mt-4'> /h</span>
-          </Flex>
-        </Card>
-        <Card
-          title='Tổng ngày được nghỉ '
-          bordered={false}
-          style={{ width: '23%' }}
-        >
-          <Flex justify={'center'} align={'center'} className='w-full h-20'>
-            <span className='text-4xl'>{Leaveday}</span>
-            <span className='ml-1 mt-4'> /ngày</span>
-          </Flex>
-        </Card>
-        <Card
-          title='Tổng ngày nghỉ sử dụng'
-          bordered={false}
-          style={{ width: '23%' }}
-        >
-          <Flex justify={'center'} align={'center'} className='w-full h-20'>
-            <span className='text-4xl'>{Leaveday}</span>
-            <span className='ml-1 mt-4'> /ngày</span>
-          </Flex>
-        </Card>
-      </Flex>
       <Flex justify={'start'} align={'center'} className='w-full h-20 gap-1'>
       <Select
         showSearch
@@ -282,6 +214,7 @@ export const EmployeeStatistics = () => {
       </Flex>  
    
     <Card className='w-full '  > 
+    <h1>Tổng giờ công của project: CyberSoft </h1>
       <ChartStatistic  typeChart="bar" data={state} ></ChartStatistic>
     </Card>
     <Flex justify={'start'} align={'center'} className='w-full gap-2'>

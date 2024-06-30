@@ -20,12 +20,12 @@ export const projectApi = createApi({
     }),
     getProjectByEmployee: builder.query<
       Response<Project>,
-      {  year?: number }
+      {  year?: number ,type?: string}
     >({
-      query: ( year ) => {
+      query: ( {year,type }) => {
         let url = `/employee/project/{id}`;
-        if (year) {
-          url += `?year=${year}`;
+        if (year && type) {
+          url += `?year=${year}&type=${type}`;
         }
         return url;
       },
