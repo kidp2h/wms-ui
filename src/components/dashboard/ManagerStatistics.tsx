@@ -10,7 +10,7 @@ let chartareas = {
   options: {
     chart: {
       height: 350,
-      type: 'line',
+      type: 'bar',
       zoom: {
         enabled: false,
       },
@@ -101,6 +101,7 @@ let chartbarEmployee = {
       max: function (max: number) {
         return Math.max(...chartbarEmployee.series[0].data) + 5; // Tính max và cộng thêm 5 đơn vị
       },
+      min: 0,
     },
   },
 };
@@ -113,6 +114,7 @@ function filterProperties(obj: any, keysToKeep: any[]) {
   });
   return filteredObj;
 }
+let seriesTotal: any[];
 
 export const ManagerStatistics = () => {
   const [stateTotal, setStateTotal] = useState(chartareas);
@@ -120,25 +122,19 @@ export const ManagerStatistics = () => {
   const [stateEmployee, setStateEmployee] = useState(chartbarEmployee);
   const { data: response, refetch: refetchProjects } = useGetProjectsQuery();
   const { data: responseTimeEntry, refetch } = useGetTimeEntriesQuery();
+
   useEffect(() => {
-    refetch();
-    refetchProjects();
     if (response?.data) {
-      let seriesTotal: any[] = [];
-      //data tong
-      response?.data.forEach((x) => {
-        if (x.type == 'PROJECT') {
-          const data = {
-            id: x.id,
-            name: x.name,
-            data: [],
-            employee: [],
-            startAt: x.startDate,
-            endAt: x.endDate,
-          };
-          seriesTotal.push(data);
-        }
-      });
+      seriesTotal = response?.data
+        .filter((x) => x.type === 'PROJECT')
+        .map((x) => ({
+          id: x.id,
+          name: x.name,
+          data: [],
+          employee: [],
+          startAt: x.startDate,
+          endAt: x.endDate,
+        }));
       seriesTotal.forEach((x) => {
         let data: any[] = [];
         for (let i = 1; i <= 12; i++) {
@@ -148,7 +144,7 @@ export const ManagerStatistics = () => {
               y.projectId == x.id &&
               new Date(y.date.toString()).getMonth() + 1 == i
             ) {
-              total += y.hours;
+              total += y.hours + y.overtime;
             }
             if (!x.employee.includes(y.employeeId)) {
               x.employee.push(y.employeeId);
@@ -160,12 +156,10 @@ export const ManagerStatistics = () => {
         }
         x.data = data;
       });
-      chartareas.series.push(
-        ...(seriesTotal.map((x) =>
-          filterProperties(x, ['name', 'data']),
-        ) as never[]),
-      );
-      console.log(chartareas.series);
+      chartareas.series = seriesTotal.map((x) =>
+        filterProperties(x, ['name', 'data']),
+      ) as never[];
+
       //prject
       chartbarProject.options.xaxis.categories = seriesTotal.map(
         (x) => x.name,
@@ -195,21 +189,29 @@ export const ManagerStatistics = () => {
       setStateProject(chartbarProject);
       setStateTotal(chartareas);
     }
+
+    refetch();
+    refetchProjects();
   }, [response, responseTimeEntry]);
+
   return (
     <>
       <CardManager></CardManager>
       <Card className='w-full mt-5 '>
-        <h1>Tổng giờ công của dự án trong năm </h1>
-        <ChartStatistic typeChart='line' data={stateTotal}></ChartStatistic>
+        <h1 className='text-base font-bold	 '>
+          Tổng giờ công của dự án trong năm{' '}
+        </h1>
+        <ChartStatistic typeChart='bar' data={stateTotal}></ChartStatistic>
       </Card>
       <Flex justify={'start'} align={'center'} className='w-full gap-2'>
         <Card className='w-[50%] mt-5 '>
-          <h1>Tổng giờ công của từng dự án</h1>
+          <h1 className='text-base font-bold	 '>Tổng giờ công của từng dự án</h1>
           <ChartStatistic typeChart='bar' data={stateProject}></ChartStatistic>
         </Card>
         <Card className='w-[50%] mt-5 '>
-          <h1>Tổng nhân viên tham gia của từng dự án</h1>
+          <h1 className='text-base font-bold	 '>
+            Tổng nhân viên tham gia của từng dự án
+          </h1>
           <ChartStatistic typeChart='bar' data={stateEmployee}></ChartStatistic>
         </Card>
       </Flex>

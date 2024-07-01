@@ -34,18 +34,28 @@ export const ScheduleManagement = () => {
         <Select
           showSearch
           placeholder='Chọn nhân viên'
-          className='w-1/5 block mb-5'
-          filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-          }
+          className='w-1/3 block mb-5'
+          filterOption={(input, option) => {
+            return (
+              (option?.name ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase()) ||
+              (option?.code ?? '')
+                .toUpperCase()
+                .includes(input.toUpperCase()) ||
+              (option?.email ?? '').toLowerCase().includes(input.toLowerCase())
+            );
+          }}
           onChange={(value) => {
-            console.log(value);
             setCurrent(value);
           }}
           options={employees.map((employee) => {
             return {
               value: employee.id,
-              label: employee.fullname,
+              code: employee.code,
+              email: employee.email,
+              name: employee.fullname,
+              label: `[${employee.code}] - ${employee.fullname} - ${employee.email}`,
             };
           })}
           defaultActiveFirstOption={true}

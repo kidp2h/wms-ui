@@ -1,19 +1,14 @@
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import BaseLayout from './BaseLayout';
-import { Avatar, Button, Layout, Menu, MenuProps, theme } from 'antd';
+import { Avatar, Layout, Menu, MenuProps, theme } from 'antd';
 import { useSelector } from 'react-redux';
-import {
-  selectCurrentCode,
-  selectCurrentUser,
-} from '@/redux/features/auth/auth.slice';
-import { useEffect, useState } from 'react';
+import { selectCurrentUser } from '@/redux/features/auth/auth.slice';
+import { useEffect } from 'react';
 
 import {
   CalendarOutlined,
   DashboardOutlined,
   LaptopOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   ProjectOutlined,
   UsergroupAddOutlined,
   UserOutlined,
@@ -26,7 +21,7 @@ const { Header, Sider, Content } = Layout;
 
 export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
-  const { data: response, isLoading } = useGetEmployeeQuery();
+  const { data: response } = useGetEmployeeQuery();
 
   const {
     token: { colorBgContainer },
@@ -39,7 +34,6 @@ export default function MainLayout() {
       navigate('/auth/login');
     }
   }, [user]);
-  console.log(location);
 
   const headerItem: MenuProps['items'] = [
     {

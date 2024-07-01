@@ -1,17 +1,10 @@
 import { useGetProjectsQuery, useGetTimeEntriesQuery } from '@/services';
-import { Card, Flex, Select, SelectProps } from 'antd';
-import { set } from 'lodash';
+import { Card, Flex } from 'antd';
 import { useEffect, useState } from 'react';
 import { TypeProject } from 'wms-types';
 
 export const CardManager = () => {
-  const {
-    data: response,
-    isError,
-    isLoading,
-    currentData,
-    refetch,
-  } = useGetProjectsQuery();
+  const { data: response } = useGetProjectsQuery();
   const { data: responseTimeEntry } = useGetTimeEntriesQuery();
 
   const [totalProject, setTotalProject] = useState<string>('0');
@@ -30,7 +23,6 @@ export const CardManager = () => {
         },
         0,
       );
-      console.log(totalTimeEntry);
       setTotalTimeEntry(totalTimeEntry?.toString() || '0');
     }
     const employees: any = responseTimeEntry?.data?.reduce(

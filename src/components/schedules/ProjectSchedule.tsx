@@ -56,8 +56,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
 
   useEffect(() => {
     if (isError) {
-      console.log(data, error);
-
       api.error({
         message: 'Thông báo',
         description: (error as any).data.message,
@@ -79,8 +77,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
       // INFO: update time entry
       const newEntries = entries.map((entry) => {
         if (entry?.id === timeEntry.id) {
-          // console.log(entry, timeEntry, employeeId);
-
           if (employeeId === null) {
             return {
               ...entry,
@@ -139,10 +135,8 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
           if (!entries[index][`${type}`]) {
             // NOTE: add hours value with overtime
             entries[index][`${type}`] = Number(value);
-            console.log(entries[index]);
           } else {
             // NOTE: update hours value with overtime
-            console.log(entries[index][`${type}`]);
 
             entries.splice(index, 1, {
               ...entries[index],
@@ -163,12 +157,9 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     }
   };
   useEffect(() => {
-    console.log(dayjs().utc(true).format());
-
     if (responseProject !== undefined && responseTimeEntry !== undefined) {
       // refetch();
       // timeEntryRefetch();
-      // console.log(responseTimeEntry);
 
       const listEntries: TimeEntryProject[] = [];
       responseTimeEntry?.data?.forEach((timeEntry) => {
@@ -197,7 +188,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
       );
       setDataSource([..._!, { key: 'total', project: null, timeEntry: null }]);
     }
-  }, [responseProject, responseTimeEntry, isError]);
+  }, [responseProject, responseTimeEntry, isError, employeeId]);
 
   const daysOfWeek = [
     'Dự án',
@@ -210,8 +201,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     'Chủ nhật',
   ];
   useEffect(() => {
-    console.log('re');
-
     let temp = 0;
     const columns = daysOfWeek.map((value, index) => {
       if (index === 0) {
@@ -301,8 +290,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
             if (project === null) {
               let total = 0;
 
-              // console.log(entries);
-
               entries.forEach((entry) => {
                 const dateTimeEntry = dayjs(entry.date).date();
                 const monthTimeEntry = dayjs(entry.date).month() + 1;
@@ -326,9 +313,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
                   {total}
                 </Tag>
               );
-
-              // console.log('record', record);
-              // console.log(entries);
             }
 
             const timeEntries = record.timeEntry as TimeEntryProject[];
@@ -338,18 +322,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
               const monthTimeEntry = dayjs(timeEntry.date).month() + 1;
               const yearTimeEntry = dayjs(timeEntry.date).year();
 
-              // const dateStart = range?.start?.object.date();
-              // const monthStart = range?.start?.object?.month() + 1;
-              // const yearStart = range?.start?.object.year();
-              // const dateEnd = range?.end?.object.date();
-              // const monthEnd = range?.end?.object.month() + 1;
-              // const yearEnd = range?.end?.object.year();
-              // const between = now.isBetween(
-              //   `${yearStart}/${monthStart}/${dateStart}`,
-              //   `${yearEnd}/${monthEnd}/${dateEnd}`,
-              //   'days',
-              //   '[)',
-              // );
               if (
                 dateTimeEntry === date &&
                 monthTimeEntry === month &&
@@ -457,12 +429,9 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
       }
     });
     setColumns(columns);
-    // console.log(tempTotalWeeks);
-  }, [range, entries, responseTimeEntry, responseProject]);
+  }, [range, entries, responseTimeEntry, responseProject, employeeId]);
 
-  useEffect(() => {
-    // console.log('totalWeeks', totalWeeks);
-  }, [totalWeeks]);
+  useEffect(() => {}, [totalWeeks, employeeId]);
 
   const calculateTotal = (range: any) => {
     let total = 0;
@@ -477,8 +446,6 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
 
     if (entries) {
       entries.forEach((entry) => {
-        console.log(entry);
-
         const dateTimeEntry = dayjs(entry.date).date();
         const monthTimeEntry = dayjs(entry.date).month() + 1;
         const yearTimeEntry = dayjs(entry.date).year();
@@ -504,7 +471,7 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
   };
   useEffect(() => {
     calculateTotal(range);
-  }, [entries, responseTimeEntry]);
+  }, [entries, responseTimeEntry, employeeId]);
 
   const onChange: DatePickerProps['onChange'] = (date) => {
     const startOfWeek = date.day(0).add(1, 'day');
@@ -550,6 +517,10 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
     refetch();
     timeEntryRefetch();
   };
+
+  useEffect(() => {
+    setColumns([]);
+  }, [employeeId]);
   return (
     <Flex className='flex-col'>
       {contextHolder}
@@ -576,7 +547,10 @@ export const ProjectSchedule = ({ employeeId, isAdmin }: PropsType) => {
 
       {range && (
         <>
-          <SkeletonTable loading={isLoading} columns={columns as any}>
+          <SkeletonTable
+            loading={columns.length === 0 ? true : isLoading}
+            columns={columns as any}
+          >
             <Table
               className='w-full'
               dataSource={dataSource}

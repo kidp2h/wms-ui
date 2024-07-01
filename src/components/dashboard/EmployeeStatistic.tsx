@@ -1,5 +1,5 @@
 import { useGetProjectByEmployeeWithYearQuery } from '@/services';
-import { Card, DatePicker, Flex, Select, Skeleton } from 'antd';
+import { Button, Card, DatePicker, Flex, Select, Skeleton } from 'antd';
 import { useEffect, useState } from 'react';
 import { ChartStatistic } from '@/components/shared/Chart';
 import dayjs, { Dayjs } from 'dayjs';
@@ -46,7 +46,7 @@ export const EmployeeStatistics = () => {
       case 'week': {
         const days: string[] = [];
         for (let i = dateStartOfWeek; i <= dateEndOfWeek; i++) {
-          days.push(`${i}/${month}/${year}`);
+          days.push(`${i >= 10 ? i : `0${i}`}/${month}/${year}`);
         }
         days.forEach((day) => {
           let sumH = 0;
@@ -298,7 +298,6 @@ export const EmployeeStatistics = () => {
     let sickLeaves = 0;
     let annualLeaves = 0;
     let otherLeaves = 0;
-    console.log(projectsEmployeeWithYear);
 
     projectsEmployeeWithYear.data.forEach((project) => {
       let sumH = 0;
@@ -318,7 +317,6 @@ export const EmployeeStatistics = () => {
         listProject.push(project.name);
       }
     });
-    console.log(hoursProjects);
 
     leaves.push(annualLeaves, sickLeaves, otherLeaves);
 
@@ -388,6 +386,7 @@ export const EmployeeStatistics = () => {
   }, []);
   return (
     <>
+      {/* <Button onClick={() => refetch()}>Refetch</Button> */}
       <CardEmployee></CardEmployee>
       <Flex justify={'start'} align={'center'} className='w-full h-20 gap-1'>
         <Select

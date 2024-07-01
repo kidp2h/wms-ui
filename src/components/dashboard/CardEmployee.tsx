@@ -10,7 +10,7 @@ const Daynow = new Date();
 
 export const CardEmployee = () => {
   const [date, setDate] = useState<number>(Daynow.getFullYear());
-  const { data: timeentry } = useGetTimeEntryEmployeeQuery();
+  const { data: timeentry } = useGetTimeEntryEmployeeQuery(null);
   const { data: projectsemployee } = useGetProjectByEmployeeQuery(date);
   const { data: ProjectLeaveDay } = useGetProjectsQuery();
   const [totalProject, setTotalProject] = useState<string>('0');
@@ -46,7 +46,6 @@ export const CardEmployee = () => {
         setLeaveDayused(parseFloat((totalleaveUsed / 8).toFixed(1)).toString());
         setLeaveday('12');
       }
-      console.log(timeentry?.data);
       const totaltime =
         timeentry?.data?.reduce((acc, time) => {
           if (

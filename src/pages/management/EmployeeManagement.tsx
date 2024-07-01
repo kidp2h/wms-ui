@@ -24,7 +24,6 @@ import { ColumnExpand, EditableCell } from '@/components/shared/EditableCell';
 import { ColumnType } from 'antd/es/table';
 import {
   useAddEmployeeMutation,
-  useGetEmployeesQuery,
   usePaginateEmployeesMutation,
   useRemoveEmployeeMutation,
   useUpdateEmployeeMutation,

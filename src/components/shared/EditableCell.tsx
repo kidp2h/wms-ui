@@ -44,8 +44,6 @@ export const EditableCell: React.FC<
   hideWhen,
   ...restProps
 }) => {
-  console.log(required);
-
   let inputNode = null;
 
   // if (hide === true) {

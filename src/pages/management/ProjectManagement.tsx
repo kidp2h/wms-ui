@@ -35,23 +35,13 @@ import {
 import SkeletonTable, {
   SkeletonTableColumnsType,
 } from '@/components/shared/TableSkeleton';
-import { useSelector } from 'react-redux';
-import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
 import dayjs from 'dayjs';
 export const ProjectManagement = () => {
-  const code = useSelector(selectCurrentCode);
-
-  const [paginateProjects, paginatedProjects] = usePaginateProjectsMutation();
+  const [, paginatedProjects] = usePaginateProjectsMutation();
 
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
-  const {
-    data: response,
-    isError,
-    isLoading,
-    currentData,
-    refetch,
-  } = useGetProjectsQuery();
+  const { data: response, isLoading, refetch } = useGetProjectsQuery();
   const [removeProject, ProjectRemoved] = useRemoveProjectMutation();
   const [addProject, ProjectAdded] = useAddProjectMutation();
 
@@ -66,9 +56,6 @@ export const ProjectManagement = () => {
 
   const isEditing = (record: Partial<Project>) => record.code === editingKey;
   const edit = (record: Partial<Project>) => {
-    console.log({ ...record });
-    console.log(record);
-
     form.setFieldsValue({
       ...record,
       startDate: dayjs(record.startDate),
@@ -81,7 +68,6 @@ export const ProjectManagement = () => {
     const row = await form.validateFields();
 
     updateProject({ ...record, ...row });
-    console.log(row);
   };
 
   useEffect(() => {
@@ -149,10 +135,7 @@ export const ProjectManagement = () => {
       );
       setCreatingKey('');
       setEditingKey('');
-      console.log(projectadd);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
     if (!value) {
@@ -160,7 +143,6 @@ export const ProjectManagement = () => {
     } else {
       setSearch(value);
       if (projectSearch != undefined) {
-        console.log(projectSearch?.data);
         setProjects([...projectSearch?.data!]);
       }
     }
@@ -262,8 +244,6 @@ export const ProjectManagement = () => {
 
       required: false,
       render: (_: any, record: Partial<Project>) => {
-        // console.log(record);
-
         const editable = isEditing(record);
         if (record?.id === undefined) {
           return (

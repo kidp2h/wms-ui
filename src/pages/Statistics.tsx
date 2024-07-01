@@ -1,29 +1,29 @@
-import { selectCurrentCode } from '@/redux/features/auth/auth.slice';
-import {
-  
-  useGetEmployeeByIdQuery,
-  useGetEmployeeQuery,
-  useGetProjectByEmployeeQuery,
-  useGetTimeEntryEmployeeQuery,
-} from '@/services';
+import { useGetEmployeeQuery } from '@/services';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { EmployeeStatistics } from './management/EmployeeStatistic';
+import { EmployeeStatistics } from '@/components/dashboard/EmployeeStatistic';
+import { ManagerStatistics } from '@/components/dashboard/ManagerStatistics';
 import { Role } from 'wms-types';
 
 export const Statistics = () => {
-  const { data: response, isLoading } = useGetEmployeeQuery();
-  useEffect(() => {
-  }, [response]);
+  const { data: response } = useGetEmployeeQuery();
+  useEffect(() => {}, [response]);
+
   return (
     <>
-      {/* {response?.data?.role === Role.MANAGER ? ( */}
-      {/*   <ManagerStatistics></ManagerStatistics> */}
-      {/* ) : ( */}
-      {/*   <EmployeeStatistics></EmployeeStatistics> */}
-      {/* )} */}
-      {/* <ManagerStatistics></ManagerStatistics> */}
-      <EmployeeStatistics></EmployeeStatistics>
+      {response?.data?.role === Role.MANAGER ? (
+        <>
+          <div className='text-2xl uppercase bold mb-5'>Quản lý - Thống kê</div>
+
+          <ManagerStatistics></ManagerStatistics>
+        </>
+      ) : (
+        <>
+          <div className='text-2xl uppercase bold mb-5'>
+            Nhân viên - Thống kê
+          </div>
+          <EmployeeStatistics></EmployeeStatistics>
+        </>
+      )}
     </>
   );
 };

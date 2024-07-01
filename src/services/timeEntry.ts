@@ -20,7 +20,7 @@ export const timeEntryApi = createApi({
       Response<PrismaModel.TimeEntryProject[]>,
       string | null
     >({
-      query: (employeeId?: string | null = null) => {
+      query: (employeeId: string | null = null) => {
         if (employeeId) {
           // INFO: get employee's time entries by employeeId
           return `/employee/time-entries/${employeeId}`;
