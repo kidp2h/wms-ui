@@ -6,7 +6,7 @@ import { TypeProject } from 'wms-types';
 export const CardManager = () => {
   const { data: response } = useGetProjectsQuery();
   const { data: responseTimeEntry } = useGetTimeEntriesQuery();
-
+  const [IdEmployee, setIdEmployee] = useState<string>('');
   const [totalProject, setTotalProject] = useState<string>('0');
   const [totalTimeEntry, setTotalTimeEntry] = useState<string>('0');
   const [employees, setEmployees] = useState<string>('0');
@@ -18,7 +18,10 @@ export const CardManager = () => {
       setTotalProject(projects.length.toString());
       const totalTimeEntry: any = responseTimeEntry?.data?.reduce(
         (acc: any, time: any) => {
-          if (time.project.time == TypeProject.PROJECT) acc += time.hours;
+
+          if (time.project.type == TypeProject.PROJECT){ 
+
+            acc += time.hours +time.overtime};
           return acc;
         },
         0,

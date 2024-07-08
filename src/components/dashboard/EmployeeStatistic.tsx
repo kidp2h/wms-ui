@@ -6,12 +6,20 @@ import dayjs, { Dayjs } from 'dayjs';
 import { sum } from 'lodash';
 import { TypeLeave, TypeProject } from 'wms-types';
 import { CardEmployee } from './CardEmployee';
+import { UnderlineOutlined } from '@ant-design/icons';
 
-export const EmployeeStatistics = () => {
-  const { data: projectsEmployeeWithYear, refetch } =
-    useGetProjectByEmployeeWithYearQuery({
-      year: new Date().getFullYear(),
-    });
+export const EmployeeStatistics = ({id}:{id:string}) => {
+  const { data: projectsEmployeeWithYear, refetch } =id !== "" ? 
+  useGetProjectByEmployeeWithYearQuery({
+    id: id,
+    year: new Date().getFullYear(),
+  }) :  useGetProjectByEmployeeWithYearQuery({
+    id: undefined,
+    year: new Date().getFullYear(),
+  })
+
+
+
   const [valueDatePicker, setValueDatePicker] = useState<Dayjs>(dayjs());
   const [barChart, setBarChart] = useState<any>(null);
   const [chartDetailHours, setChartDetailHours] = useState<any>(null);
@@ -387,7 +395,7 @@ export const EmployeeStatistics = () => {
   return (
     <>
       {/* <Button onClick={() => refetch()}>Refetch</Button> */}
-      <CardEmployee></CardEmployee>
+      <CardEmployee id={id}></CardEmployee>
       <Flex justify={'start'} align={'center'} className='w-full h-20 gap-1'>
         <Select
           className='w-52'

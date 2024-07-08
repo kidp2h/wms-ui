@@ -1,5 +1,6 @@
 import {
   useGetProjectByEmployeeQuery,
+  useGetProjectByEmployeeWithYearQuery,
   useGetProjectsQuery,
   useGetTimeEntryEmployeeQuery,
 } from '@/services';
@@ -8,10 +9,17 @@ import { useEffect, useState } from 'react';
 import { TypeProject } from 'wms-types';
 const Daynow = new Date();
 
-export const CardEmployee = () => {
+export const CardEmployee = ({id}:{id:string}) => {
   const [date, setDate] = useState<number>(Daynow.getFullYear());
-  const { data: timeentry } = useGetTimeEntryEmployeeQuery(null);
-  const { data: projectsemployee } = useGetProjectByEmployeeQuery(date);
+  const { data: timeentry } = id !== "" ? useGetTimeEntryEmployeeQuery(id): useGetTimeEntryEmployeeQuery(null);
+  const { data: projectsemployee } = id !== "" ? 
+  useGetProjectByEmployeeWithYearQuery({
+    id: id,
+    year: date,
+  }) :  useGetProjectByEmployeeWithYearQuery({
+    id: undefined,
+    year: date,
+  })
   const { data: ProjectLeaveDay } = useGetProjectsQuery();
   const [totalProject, setTotalProject] = useState<string>('0');
   const [totalTimeEntry, setTotalTimeEntry] = useState<string>('0');
