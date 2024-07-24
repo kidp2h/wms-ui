@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChartStatistic } from '../../components/shared/Chart';
 import { CardManager } from './CardManager';
-import { useGetProjectsQuery, useGetTimeEntriesQuery } from '@/services';
+import { useGetEmployeesQuery, useGetProjectsQuery, useGetTimeEntriesQuery } from '@/services';
+import { EmployeeStatistics } from './EmployeeStatistic';
 let chartareas = {
   series: [],
   options: {
@@ -116,13 +117,14 @@ function filterProperties(obj: any, keysToKeep: any[]) {
 }
 let seriesTotal: any[];
 
-export const ManagerStatistics = () => {
+export const ManagerStatistics = ({id}:{id:string} ) => {
   const [stateTotal, setStateTotal] = useState(chartareas);
   const [stateProject, setStateProject] = useState(chartbarProject);
   const [stateEmployee, setStateEmployee] = useState(chartbarEmployee);
+  const [stateEmployeeId, setStateEmployeeId] = useState<string>('');
   const { data: response, refetch: refetchProjects } = useGetProjectsQuery();
   const { data: responseTimeEntry, refetch } = useGetTimeEntriesQuery();
-
+  const {data :responseEmployee} = useGetEmployeesQuery();
   useEffect(() => {
     if (response?.data) {
       seriesTotal = response?.data
@@ -203,7 +205,7 @@ export const ManagerStatistics = () => {
         </h1>
         <ChartStatistic typeChart='bar' data={stateTotal}></ChartStatistic>
       </Card>
-      <Flex justify={'start'} align={'center'} className='w-full gap-2'>
+      <Flex justify={'start'} align={'center'} className='w-full gap-2 mb-4'>
         <Card className='w-[50%] mt-5 '>
           <h1 className='text-base font-bold	 '>Tổng giờ công của từng dự án</h1>
           <ChartStatistic typeChart='bar' data={stateProject}></ChartStatistic>
@@ -215,6 +217,26 @@ export const ManagerStatistics = () => {
           <ChartStatistic typeChart='bar' data={stateEmployee}></ChartStatistic>
         </Card>
       </Flex>
+      <h1 className='text-base font-bold	mb-3 '>Thống kê từng nhân viên</h1>
+      <Select
+          className='w-52 mb-4'
+          showSearch
+          placeholder='Chọn Nhân viên'
+          onChange={(value: string) => {
+            setStateEmployeeId(value);
+          }}
+          options={
+            responseEmployee?.data?.map((employee) => {
+              return { value: employee.id, label: employee.fullname };
+            })
+          }
+           defaultValue={ responseEmployee?.data?.find(
+              (e) => e.id === id,
+            )?.fullname
+          }
+          />
+      <EmployeeStatistics id={stateEmployeeId}></EmployeeStatistics>
+
     </>
   );
 };

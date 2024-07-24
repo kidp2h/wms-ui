@@ -14,14 +14,14 @@ export const Statistics = () => {
         <>
           <div className='text-2xl uppercase bold mb-5'>Quản lý - Thống kê</div>
 
-          <ManagerStatistics></ManagerStatistics>
+          <ManagerStatistics id={response?.data?.id}></ManagerStatistics>
         </>
       ) : (
         <>
           <div className='text-2xl uppercase bold mb-5'>
             Nhân viên - Thống kê
           </div>
-          <EmployeeStatistics></EmployeeStatistics>
+          <EmployeeStatistics id=''></EmployeeStatistics>
         </>
       )}
     </>
