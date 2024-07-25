@@ -21,7 +21,7 @@ const { Header, Sider, Content } = Layout;
 
 export default function MainLayout() {
   const user = useSelector(selectCurrentUser);
-  const { data: response } = useGetEmployeeQuery();
+  const { data: response ,refetch} = useGetEmployeeQuery();
 
   const {
     token: { colorBgContainer },
@@ -33,6 +33,7 @@ export default function MainLayout() {
     if (!user) {
       navigate('/auth/login');
     }
+    refetch();
   }, [user]);
 
   const headerItem: MenuProps['items'] = [
