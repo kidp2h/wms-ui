@@ -271,6 +271,7 @@ export const EmployeeManagement = () => {
     return {
       ...col,
       onCell: (record: Partial<Employee>) => ({
+        ...col,
         record,
         title: col.title,
         dataindex: col.dataIndex,

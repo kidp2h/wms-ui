@@ -340,7 +340,9 @@ export const ProjectManagement = () => {
     return {
       ...col,
       onCell: (record: Partial<Project>) => ({
+        ...col,
         record,
+
         title: col.title,
         dataIndex: col.dataIndex,
         editing: isEditing(record) ? true : false,
